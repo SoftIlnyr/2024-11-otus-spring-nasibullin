@@ -29,8 +29,7 @@ public class CsvQuestionDao implements QuestionDao {
             throw new QuestionReadException("Resource not found: " + testFileName);
         }
         InputStreamReader inputStreamReader = new InputStreamReader(resourceInputStream);
-        List<QuestionDto> questionDtos;
-        questionDtos = new CsvToBeanBuilder(inputStreamReader)
+        List<QuestionDto> questionDtos = new CsvToBeanBuilder(inputStreamReader)
                 .withType(QuestionDto.class)
                 .withSkipLines(1)
                 .withSeparator(';')
