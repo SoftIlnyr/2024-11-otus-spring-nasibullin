@@ -1,7 +1,5 @@
 package ru.otus.hw.dao;
 
-import com.opencsv.CSVReader;
-import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
 import ru.otus.hw.config.TestFileNameProvider;
@@ -9,12 +7,8 @@ import ru.otus.hw.dao.dto.QuestionDto;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.exceptions.QuestionReadException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
+import java.io.InputStreamReader;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -29,19 +23,19 @@ public class CsvQuestionDao implements QuestionDao {
         // Про ресурсы: https://mkyong.com/java/java-read-a-file-from-resources-folder/
         String testFileName = fileNameProvider.getTestFileName();
 
-        URL resource = getClass().getClassLoader().getResource(testFileName);
-        List<QuestionDto> questionDtos;
-        try {
-            FileReader reader = new FileReader(resource.getFile());
-            questionDtos = new CsvToBeanBuilder(reader)
-                    .withType(QuestionDto.class)
-                    .withSkipLines(1)
-                    .withSeparator(';')
-                    .build()
-                    .parse();
-        } catch (FileNotFoundException e) {
-            throw new QuestionReadException(testFileName, e);
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream resourceInputStream = classLoader.getResourceAsStream(testFileName);
+        if (resourceInputStream == null) {
+            throw new QuestionReadException("Resource not found: " + testFileName);
         }
+        InputStreamReader inputStreamReader = new InputStreamReader(resourceInputStream);
+        List<QuestionDto> questionDtos;
+        questionDtos = new CsvToBeanBuilder(inputStreamReader)
+                .withType(QuestionDto.class)
+                .withSkipLines(1)
+                .withSeparator(';')
+                .build()
+                .parse();
 
         return questionDtos.stream().map(QuestionDto::toDomainObject).toList();
     }

@@ -13,6 +13,7 @@ import java.util.List;
 public class TestServiceImpl implements TestService {
 
     private final IOService ioService;
+
     private QuestionDao questionDao;
 
     @Override
@@ -23,8 +24,9 @@ public class TestServiceImpl implements TestService {
         List<Question> questions = questionDao.findAll();
         for (Question question : questions) {
             ioService.printLine(question.text());
+            int answerIndex = 0;
             for (Answer answer : question.answers()) {
-                ioService.printLine(answer.text());
+                ioService.printLine(String.format("%d) %s", ++answerIndex, answer.text()));
             }
             ioService.printLine("");
         }
