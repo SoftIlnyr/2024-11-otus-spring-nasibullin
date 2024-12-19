@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.otus.hw.config.TestFileNameProvider;
+import ru.otus.hw.domain.Question;
 import ru.otus.hw.exceptions.QuestionReadException;
+
+import java.util.List;
 
 import static org.mockito.Mockito.when;
 
@@ -15,7 +18,8 @@ class CsvQuestionDaoTest {
         TestFileNameProvider testFileNameProvider = Mockito.mock(TestFileNameProvider.class);
         when(testFileNameProvider.getTestFileName()).thenReturn("existing_questions.csv");
         CsvQuestionDao csvQuestionDao = new CsvQuestionDao(testFileNameProvider);
-        csvQuestionDao.findAll();
+        List<Question> questions = csvQuestionDao.findAll();
+        Assertions.assertTrue(questions.size() >= 3);
     }
 
     @Test
