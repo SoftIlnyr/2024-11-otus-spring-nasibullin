@@ -38,7 +38,6 @@ public class TestServiceImpl implements TestService {
         int answerIndex = 0;
         for (var answer: answers) {
             ioService.printLine(String.format("%d) %s", ++answerIndex, answer.text()));
-            answerIndex++;
         }
     }
 
