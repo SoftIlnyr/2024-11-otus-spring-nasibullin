@@ -13,14 +13,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
 
-    private final IOService ioService;
+    private final LocalizedIOService ioService;
 
     private final QuestionDao questionDao;
 
     @Override
     public TestResult executeTestFor(Student student) {
         ioService.printLine("");
-        ioService.printFormattedLine("Please answer the questions below%n");
+        ioService.printLineLocalized("TestService.answer.the.questions");
+        ioService.printLine("");
+
         var questions = questionDao.findAll();
         var testResult = new TestResult(student);
 
@@ -44,4 +46,5 @@ public class TestServiceImpl implements TestService {
     private boolean checkAnswer(int answerNumber, List<Answer> answers) {
         return answers.get(answerNumber - 1).isCorrect();
     }
+
 }
