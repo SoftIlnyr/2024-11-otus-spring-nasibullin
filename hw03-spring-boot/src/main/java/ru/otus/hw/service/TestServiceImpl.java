@@ -29,7 +29,8 @@ public class TestServiceImpl implements TestService {
         for (var question: questions) {
             ioService.printLine(question.text());
             showOptions(question.answers());
-            int answerNumber = ioService.readIntForRange(1, question.answers().size(), "Out of range");
+            int answerNumber = ioService.readIntForRange(1, question.answers().size(),
+                    ioService.getMessage("TestService.read.out.of.range"));
             boolean isAnswerValid = checkAnswer(answerNumber, question.answers());
             testResult.applyAnswer(question, isAnswerValid);
         }
