@@ -13,6 +13,6 @@ public class ApplicationRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        testRunnerService.run();
+        testRunnerService.runTest();
     }
 }

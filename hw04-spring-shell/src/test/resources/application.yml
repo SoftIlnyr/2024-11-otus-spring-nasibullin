@@ -1,0 +1,12 @@
+spring:
+  shell:
+    interactive:
+      enabled: false
+    script:
+      enabled: false
+test:
+  rightAnswersCountToPass: 3
+  locale: ru-RU
+  fileNameByLocaleTag:
+    ru-RU: questions_ru.csv
+    en-US: questions.csv
