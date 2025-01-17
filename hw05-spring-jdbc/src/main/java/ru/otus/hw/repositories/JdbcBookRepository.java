@@ -2,13 +2,11 @@ package ru.otus.hw.repositories;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -16,23 +14,23 @@ import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
 public class JdbcBookRepository implements BookRepository {
 
-    private final JdbcTemplate jdbc;
+    private final JdbcOperations jdbc;
+
+    private final NamedParameterJdbcOperations namedJdbc;
+
     private final GenreRepository genreRepository;
 
     @Override
@@ -89,26 +87,19 @@ public class JdbcBookRepository implements BookRepository {
     private void mergeBooksInfo(List<Book> booksWithoutGenres, List<Genre> genres,
                                 List<BookGenreRelation> relations) {
         var genresMap = genres.stream().collect(Collectors.toMap(Genre::getId, genre -> genre));
-
-        booksWithoutGenres.forEach(book -> {
-            var book_genres = relations.stream().filter(relation -> relation.bookId == book.getId())
-                    .map(relation -> genresMap.get(relation.genreId))
-                    .toList();
-            book.setGenres(book_genres);
-        });
+        var booksMap = booksWithoutGenres.stream().collect(Collectors.toMap(Book::getId, book -> book));
+        relations.forEach(relation -> booksMap.get(relation.bookId).getGenres().add(genresMap.get(relation.genreId)));
     }
 
     private Book insert(Book book) {
         var keyHolder = new GeneratedKeyHolder();
 
-        PreparedStatementCreator preparedStatementCreator = con -> {
-            PreparedStatement ps = con.prepareStatement("insert into books (title, author_id) values (?, ?)", Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, book.getTitle());
-            ps.setLong(2, book.getAuthor().getId());
-            return ps;
-        };
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("title", book.getTitle());
+        params.addValue("author_id", book.getAuthor().getId());
 
-        jdbc.update(preparedStatementCreator, keyHolder);
+        namedJdbc.update("insert into books (title, author_id) values (:title, :author_id)",
+                params, keyHolder, new String[]{"id"});
 
         //noinspection DataFlowIssue
         book.setId(keyHolder.getKeyAs(Long.class));
@@ -118,9 +109,9 @@ public class JdbcBookRepository implements BookRepository {
 
     private Book update(Book book) {
 
-        var namedTemplate = new NamedParameterJdbcTemplate(jdbc);
-
-        var numberOfUpdatedRows = namedTemplate.update("update books set title = :title, author_id = :author_id where id = :id",
+        var numberOfUpdatedRows = namedJdbc.update("""
+                update books set title = :title, author_id = :author_id where id = :id
+                """,
                 Map.of("id", book.getId(), "title", book.getTitle(), "author_id", book.getAuthor().getId()));
 
         // Выбросить EntityNotFoundException если не обновлено ни одной записи в БД
@@ -134,24 +125,18 @@ public class JdbcBookRepository implements BookRepository {
     }
 
     private void batchInsertGenresRelationsFor(Book book) {
-        jdbc.batchUpdate("insert into books_genres (book_id, genre_id) values (?, ?)", new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                ps.setLong(1, book.getId());
-                ps.setLong(2, book.getGenres().get(i).getId());
-            }
+        Map<String, Object>[] attributes = new HashMap[book.getGenres().size()];
+        for (int i = 0; i < book.getGenres().size(); i++) {
+            attributes[i] = new HashMap<>();
+            attributes[i].put("book_id", book.getId());
+            attributes[i].put("genre", book.getGenres().get(i).getId());
+        }
 
-            @Override
-            public int getBatchSize() {
-                return book.getGenres().size();
-            }
-        });
+        namedJdbc.batchUpdate("insert into books_genres (book_id, genre_id) values (:book_id, :genre)", attributes);
     }
 
     private void removeGenresRelationsFor(Book book) {
-        var namedTemplate = new NamedParameterJdbcTemplate(jdbc);
-
-        namedTemplate.update("delete from books_genres where book_id = :book_id", Map.of("book_id", book.getId()));
+        namedJdbc.update("delete from books_genres where book_id = :book_id", Map.of("book_id", book.getId()));
     }
 
     private static class BookRowMapper implements RowMapper<Book> {

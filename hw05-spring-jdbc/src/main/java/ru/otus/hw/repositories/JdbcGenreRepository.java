@@ -10,20 +10,20 @@ import ru.otus.hw.models.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
 public class JdbcGenreRepository implements GenreRepository {
 
-    private final JdbcTemplate jdbc;
+    private final JdbcTemplate jdbcTemplate;
+
+    private final NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Override
     public List<Genre> findAll() {
-        return jdbc.query("select id, name from genres", new GenreRowMapper());
+        return jdbcTemplate.query("select id, name from genres", new GenreRowMapper());
     }
 
     @Override
@@ -31,8 +31,7 @@ public class JdbcGenreRepository implements GenreRepository {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("ids", ids);
 
-        NamedParameterJdbcTemplate namedTemplate = new NamedParameterJdbcTemplate(jdbc);
-        return namedTemplate.query("select id, name from genres where id in (:ids)", params, new GenreRowMapper());
+        return namedJdbcTemplate.query("select id, name from genres where id in (:ids)", params, new GenreRowMapper());
     }
 
     private static class GenreRowMapper implements RowMapper<Genre> {

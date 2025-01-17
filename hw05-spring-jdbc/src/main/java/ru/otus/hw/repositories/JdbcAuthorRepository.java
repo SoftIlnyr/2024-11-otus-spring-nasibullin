@@ -8,7 +8,6 @@ import ru.otus.hw.models.Author;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,18 +15,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JdbcAuthorRepository implements AuthorRepository {
 
-    private final JdbcTemplate jdbc;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public List<Author> findAll() {
-        return jdbc.query("select id, full_name from authors", new AuthorRowMapper());
+        return jdbcTemplate.query("select id, full_name from authors", new AuthorRowMapper());
     }
 
     @Override
     public Optional<Author> findById(long id) {
-        return Optional.ofNullable(
-                jdbc.queryForObject("select id, full_name from authors where id = ?", new AuthorRowMapper(), id)
-        );
+        var result = jdbcTemplate.query("select id, full_name from authors where id = ?", new AuthorRowMapper(), id);
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
 
     private static class AuthorRowMapper implements RowMapper<Author> {
