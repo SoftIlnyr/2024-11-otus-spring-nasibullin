@@ -12,3 +12,11 @@ insert into books_genres(book_id, genre_id)
 values (1, 1),   (1, 2),
        (2, 3),   (2, 4),
        (3, 5),   (3, 6);
+
+insert into books_comments(book_id, text)
+values (1, 'BookComment_1_1'),
+       (1, 'BookComment_1_2'),
+       (1, 'BookComment_1_3'),
+       (2, 'BookComment_2_1'),
+       (3, 'BookComment_3_1'),
+       (3, 'BookComment_3_2');

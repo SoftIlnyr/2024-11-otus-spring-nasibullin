@@ -1,6 +1,7 @@
 package ru.otus.hw.services;
 
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.BookComment;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,4 +17,14 @@ public interface BookService {
     Book update(long id, String title, long authorId, Set<Long> genresIds);
 
     void deleteById(long id);
+
+    List<BookComment> findAllComments();
+
+    List<BookComment> findAllCommentsByBookId(long bookId);
+
+    BookComment addComment(long bookId, String comment);
+
+    BookComment updateComment(long bookCommentId, String comment);
+
+    void deleteCommentById(long bookCommentId);
 }
