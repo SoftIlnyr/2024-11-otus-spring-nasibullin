@@ -3,10 +3,11 @@ package ru.otus.hw.commands;
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import ru.otus.hw.converters.BookCommentConverter;
+import ru.otus.hw.converters.CommentConverter;
 import ru.otus.hw.converters.BookConverter;
-import ru.otus.hw.models.BookComment;
+import ru.otus.hw.models.Comment;
 import ru.otus.hw.services.BookService;
+import ru.otus.hw.services.CommentService;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,7 +21,9 @@ public class BookCommands {
 
     private final BookConverter bookConverter;
 
-    private final BookCommentConverter bookCommentConverter;
+    private final CommentService commentService;
+
+    private final CommentConverter commentConverter;
 
     @ShellMethod(value = "Find all books", key = "ab")
     public String findAllBooks() {
@@ -58,33 +61,33 @@ public class BookCommands {
 
     @ShellMethod(value = "Find all book comments", key = "bca")
     public String findAllBookComments() {
-        return bookService.findAllComments().stream()
-                .map(bookCommentConverter::bookCommentToString)
+        return commentService.findAllComments().stream()
+                .map(commentConverter::commentToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
 
     @ShellMethod(value = "Find all book comments for book", key = "bcbid")
     public String findAllBookCommentsByBookId(long bookId) {
-        return bookService.findAllCommentsByBookId(bookId).stream()
-                .map(bookCommentConverter::bookCommentToString)
+        return commentService.findAllCommentsByBookId(bookId).stream()
+                .map(commentConverter::commentToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
 
     @ShellMethod(value = "Add comment to book", key = "bcins")
     public String addBookComment(long bookId, String comment) {
-        BookComment bookComment = bookService.addComment(bookId, comment);
-        return bookCommentConverter.bookCommentToString(bookComment);
+        Comment bookComment = commentService.addComment(bookId, comment);
+        return commentConverter.commentToString(bookComment);
     }
 
     @ShellMethod(value = "Update comment to book", key = "bcupd")
     public String updateBookComment(long commentId, String comment) {
-        BookComment bookComment = bookService.updateComment(commentId, comment);
-        return bookCommentConverter.bookCommentToString(bookComment);
+        Comment bookComment = commentService.updateComment(commentId, comment);
+        return commentConverter.commentToString(bookComment);
     }
 
     @ShellMethod(value = "Delet book comment", key = "bcdel")
     public void deleteComment(long commentId) {
-        bookService.deleteCommentById(commentId);
+        commentService.deleteCommentById(commentId);
     }
 
 }

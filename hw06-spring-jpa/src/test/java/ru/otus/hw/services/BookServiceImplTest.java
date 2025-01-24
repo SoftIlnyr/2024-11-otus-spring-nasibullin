@@ -11,7 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.BookComment;
+import ru.otus.hw.models.Comment;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Transactional(propagation = Propagation.NEVER)
-@DisplayName("Сервис для работы с книгами и их комментариями")
+@DisplayName("Сервис для работы с книгами")
 @SpringBootTest
 class BookServiceImplTest {
 
@@ -100,56 +100,6 @@ class BookServiceImplTest {
 
         Book dbBook = entityManager.find(Book.class, bookId);
         assertNull(dbBook);
-    }
-
-    @Test
-    void findAllComments() {
-        List<BookComment> comments = bookService.findAllComments();
-        assertEquals(6, comments.size());
-    }
-
-    @Test
-    void findAllCommentsByBookId() {
-        long bookId = 1L;
-        List<BookComment> comments = bookService.findAllCommentsByBookId(bookId);
-        assertEquals(3, comments.size());
-    }
-
-    @Test
-    void addComment() {
-        long bookId = 1L;
-        String text = "Text";
-
-        BookComment savedComment = bookService.addComment(bookId, text);
-
-        BookComment dbComment = entityManager.find(BookComment.class, savedComment.getId());
-        assertNotNull(dbComment);
-        assertEquals(text, dbComment.getText());
-    }
-
-    @Test
-    void updateComment() {
-        long commentId = 1L;
-        BookComment bookComment = entityManager.find(BookComment.class, commentId);
-        String text = "Text";
-        assertNotEquals(text, bookComment.getText());
-
-        bookService.updateComment(commentId, text);
-
-        BookComment bookCommentAfterUpdate = entityManager.find(BookComment.class, commentId);
-        assertEquals(text, bookCommentAfterUpdate.getText());
-    }
-
-    @Test
-    void deleteCommentById() {
-        long commentId = 1L;
-        BookComment bookComment = entityManager.find(BookComment.class, commentId);
-        assertNotNull(bookComment);
-
-        bookService.deleteCommentById(commentId);
-        BookComment bookCommentAfterDelete = entityManager.find(BookComment.class, commentId);
-
-        assertNull(bookCommentAfterDelete);
     }
 
     void checkBooksEqual(Book expectedBook, Book actualBook) {

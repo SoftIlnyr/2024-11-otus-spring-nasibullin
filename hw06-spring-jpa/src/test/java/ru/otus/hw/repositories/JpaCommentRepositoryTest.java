@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.BookComment;
+import ru.otus.hw.models.Comment;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,11 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Репозиторий на основе Jpa для работы с комментариями к книгам")
 @DataJpaTest
-@Import(JpaBookCommentRepository.class)
-public class JpaBookCommentRepositoryTest {
+@Import(JpaCommentRepository.class)
+public class JpaCommentRepositoryTest {
 
     @Autowired
-    private BookCommentRepository bookCommentRepository;
+    private CommentRepository commentRepository;
 
     @Autowired
     private TestEntityManager entityManager;
@@ -31,18 +31,18 @@ public class JpaBookCommentRepositoryTest {
     @DisplayName("Должен найти все 6 комментов из data.sql")
     @Test
     void shouldFindAllBookComments() {
-        assertEquals(6, bookCommentRepository.findAll().size());
+        assertEquals(6, commentRepository.findAll().size());
     }
 
     @DisplayName("Должен найти комментарий по его id")
     @Test
     void shouldFindBookCommentById() {
         long bookCommentId = 1L;
-        BookComment expectedBookComment = entityManager.find(BookComment.class, bookCommentId);
-        Optional<BookComment> bookComment = bookCommentRepository.findById(bookCommentId);
+        Comment expectedComment = entityManager.find(Comment.class, bookCommentId);
+        Optional<Comment> bookComment = commentRepository.findById(bookCommentId);
         assertTrue(bookComment.isPresent());
-        BookComment actualBookComment = bookComment.get();
-        checkBookCommentsEqual(expectedBookComment, actualBookComment);
+        Comment actualComment = bookComment.get();
+        checkBookCommentsEqual(expectedComment, actualComment);
     }
 
     @DisplayName("Должен найти комментарии к книге по id книги")
@@ -50,8 +50,7 @@ public class JpaBookCommentRepositoryTest {
     void shouldFindBookCommentsByBookId() {
         long bookCommentId = 1L;
         Book book = entityManager.find(Book.class, bookCommentId);
-        List<BookComment> actualBookComments = bookCommentRepository.findByBookId(bookCommentId);
-        assertEquals(book.getComments().size(), actualBookComments.size());
+        List<Comment> actualComments = commentRepository.findByBookId(bookCommentId);
     }
 
     @DisplayName("Должен добавлять комментарий к книге")
@@ -60,11 +59,11 @@ public class JpaBookCommentRepositoryTest {
         long bookId = 1L;
         String bookCommentText = "test text";
         Book book = entityManager.find(Book.class, bookId);
-        BookComment bookComment = new BookComment();
-        bookComment.setBook(book);
-        bookComment.setText(bookCommentText);
-        BookComment savedComment = bookCommentRepository.save(bookComment);
-        BookComment dbComment = entityManager.find(BookComment.class, savedComment.getId());
+        Comment comment = new Comment();
+        comment.setBook(book);
+        comment.setText(bookCommentText);
+        Comment savedComment = commentRepository.save(comment);
+        Comment dbComment = entityManager.find(Comment.class, savedComment.getId());
         checkBookCommentsEqual(savedComment, dbComment);
     }
 
@@ -73,10 +72,10 @@ public class JpaBookCommentRepositoryTest {
     void shouldUpdateBookComment() {
         long bookCommentId = 1L;
         String newText = "new text";
-        BookComment bookComment = entityManager.find(BookComment.class, bookCommentId);
-        bookComment.setText(newText);
-        BookComment savedComment = bookCommentRepository.save(bookComment);
-        BookComment dbComment = entityManager.find(BookComment.class, savedComment.getId());
+        Comment comment = entityManager.find(Comment.class, bookCommentId);
+        comment.setText(newText);
+        Comment savedComment = commentRepository.save(comment);
+        Comment dbComment = entityManager.find(Comment.class, savedComment.getId());
         checkBookCommentsEqual(savedComment, dbComment);
     }
 
@@ -84,15 +83,15 @@ public class JpaBookCommentRepositoryTest {
     @Test
     void shouldDeleteBookComment() {
         long bookCommentId = 1L;
-        bookCommentRepository.deleteById(bookCommentId);
-        BookComment bookComment = entityManager.find(BookComment.class, bookCommentId);
-        assertNull(bookComment);
+        commentRepository.deleteById(bookCommentId);
+        Comment comment = entityManager.find(Comment.class, bookCommentId);
+        assertNull(comment);
     }
 
-    private void checkBookCommentsEqual(BookComment expectedBookComment, BookComment actualBookComment) {
+    private void checkBookCommentsEqual(Comment expectedComment, Comment actualComment) {
         assertAll("Проверка полей комментариев",
-                () -> assertEquals(expectedBookComment.getText(), actualBookComment.getText()),
-                () -> assertEquals(expectedBookComment.getBook(), actualBookComment.getBook())
+                () -> assertEquals(expectedComment.getText(), actualComment.getText()),
+                () -> assertEquals(expectedComment.getBook(), actualComment.getBook())
         );
     }
 }

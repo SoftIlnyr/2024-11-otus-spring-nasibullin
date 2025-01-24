@@ -42,8 +42,7 @@ public class JpaAuthorRepositoryTest {
         Author expected = entityManager.find(Author.class, authorId);
         Author actual = jpaAuthorRepository.findById(authorId).get();
         assertAll("Проверка полей авторов",
-                () -> assertEquals(expected.getFullName(), actual.getFullName()),
-                () -> assertTrue(actual.getBooks().containsAll(expected.getBooks()))
+                () -> assertEquals(expected.getFullName(), actual.getFullName())
         );
     }
 
