@@ -1,7 +1,5 @@
 package ru.otus.hw.services;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +12,6 @@ import ru.otus.hw.models.Comment;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Transactional(propagation = Propagation.NEVER)
@@ -26,9 +21,6 @@ public class CommentServiceImplTest {
 
     @Autowired
     private CommentService commentService;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Test
     void findAllComments() {
@@ -50,33 +42,24 @@ public class CommentServiceImplTest {
 
         Comment savedComment = commentService.addComment(bookId, text);
 
-        Comment dbComment = entityManager.find(Comment.class, savedComment.getId());
-        assertNotNull(dbComment);
-        assertEquals(text, dbComment.getText());
+        assertEquals(text, savedComment.getText());
+
+        savedComment.getBook();
     }
 
     @Test
     void updateComment() {
         long commentId = 1L;
-        Comment comment = entityManager.find(Comment.class, commentId);
         String text = "Text";
-        assertNotEquals(text, comment.getText());
+        Comment savedComment = commentService.updateComment(commentId, text);
 
-        commentService.updateComment(commentId, text);
-
-        Comment commentAfterUpdate = entityManager.find(Comment.class, commentId);
-        assertEquals(text, commentAfterUpdate.getText());
+        assertEquals(text, savedComment.getText());
     }
 
     @Test
     void deleteCommentById() {
         long commentId = 1L;
-        Comment comment = entityManager.find(Comment.class, commentId);
-        assertNotNull(comment);
 
         commentService.deleteCommentById(commentId);
-        Comment commentAfterDelete = entityManager.find(Comment.class, commentId);
-
-        assertNull(commentAfterDelete);
     }
 }

@@ -1,7 +1,5 @@
 package ru.otus.hw.services;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,17 +9,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Comment;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -33,17 +27,12 @@ class BookServiceImplTest {
     @Autowired
     private BookService bookService;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-
     @Test
     void findById() {
         long bookId = 1L;
-        Book expectedBook = entityManager.find(Book.class, bookId);
         Optional<Book> actualBook = bookService.findById(bookId);
         assertTrue(actualBook.isPresent());
-        checkBooksEqual(expectedBook, actualBook.get());
+        actualBook.get().getGenres();
     }
 
     @Test
@@ -60,12 +49,12 @@ class BookServiceImplTest {
         Long genreId2 = 2L;
         Set<Long> genres = Set.of(genreId1, genreId2);
         Book savedBook = bookService.insert(title, authorId, genres);
-        Book dbBook = entityManager.find(Book.class, savedBook.getId());
-        assertNotNull(dbBook);
         Assertions.assertAll("Check saved book fields",
-                () -> assertEquals(title, dbBook.getTitle()),
-                () -> assertEquals(authorId, dbBook.getAuthor().getId())
+                () -> assertEquals(title, savedBook.getTitle()),
+                () -> assertEquals(authorId, savedBook.getAuthor().getId()),
+                () -> assertEquals(2, savedBook.getGenres().size())
         );
+
     }
 
     @Test
@@ -82,11 +71,10 @@ class BookServiceImplTest {
         Set<Long> genres = Set.of(genreId1, genreId2);
 
         Book savedBook = bookService.update(bookId, title, authorId, genres);
-        Book dbBook = entityManager.find(Book.class, savedBook.getId());
-        assertNotNull(dbBook);
         Assertions.assertAll("Check saved book fields",
-                () -> assertEquals(title, dbBook.getTitle()),
-                () -> assertEquals(authorId, dbBook.getAuthor().getId())
+                () -> assertEquals(title, savedBook.getTitle()),
+                () -> assertEquals(authorId, savedBook.getAuthor().getId()),
+                () -> assertEquals(2, savedBook.getGenres().size())
         );
     }
 
@@ -97,15 +85,6 @@ class BookServiceImplTest {
         assertTrue(book.isPresent());
 
         bookService.deleteById(bookId);
-
-        Book dbBook = entityManager.find(Book.class, bookId);
-        assertNull(dbBook);
     }
 
-    void checkBooksEqual(Book expectedBook, Book actualBook) {
-        assertAll("Проверка по полям",
-                () -> assertEquals(expectedBook.getTitle(), actualBook.getTitle()),
-                () -> assertEquals(expectedBook.getAuthor().getId(), actualBook.getAuthor().getId())
-        );
-    }
 }

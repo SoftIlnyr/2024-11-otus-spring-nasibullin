@@ -5,14 +5,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Genre;
 import ru.otus.hw.repositories.AuthorRepository;
-import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -25,16 +26,20 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
-    private final CommentRepository commentRepository;
-
     @Override
     public Optional<Book> findById(long id) {
         return bookRepository.findById(id);
     }
 
+    @Transactional
     @Override
     public List<Book> findAll() {
-        return bookRepository.findAll();
+        List<Book> books = bookRepository.findAll();
+        Set<Long> genreIds = books.stream()
+                .flatMap(book -> book.getGenres().stream())
+                .map(Genre::getId)
+                .collect(Collectors.toSet());
+        return books;
     }
 
     @Transactional
@@ -52,7 +57,9 @@ public class BookServiceImpl implements BookService {
         }
 
         var book = new Book(0, title, author, genres);
-        return bookRepository.save(book);
+        Book save = bookRepository.save(book);
+        genreRepository.findAllByIds(genresIds);
+        return save;
     }
 
     @Transactional
@@ -75,7 +82,9 @@ public class BookServiceImpl implements BookService {
         book.setAuthor(author);
         book.setGenres(genres);
 
-        return bookRepository.save(book);
+        Book save = bookRepository.save(book);
+        save.getGenres().size();
+        return save;
     }
 
     @Transactional

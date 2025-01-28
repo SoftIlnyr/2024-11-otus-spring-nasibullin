@@ -1,5 +1,6 @@
 package ru.otus.hw.repositories;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class JpaBookRepositoryTest {
         var optionalBook = jpaBookRepository.findById(bookId);
         var expectedBook = entityManager.find(Book.class, bookId);
         assertTrue(optionalBook.isPresent());
-        checkBooksEqual(expectedBook, optionalBook.get());
+        Assertions.assertThat(optionalBook.get()).usingRecursiveComparison().isEqualTo(expectedBook);
     }
 
     @DisplayName("Должен найти 3 книги, загруженные через data.sql")
@@ -60,7 +61,7 @@ public class JpaBookRepositoryTest {
         Book savedBook = jpaBookRepository.save(newBook);
         assertNotNull(savedBook);
         var dbBook = entityManager.find(Book.class, savedBook.getId());
-        checkBooksEqual(dbBook, newBook);
+        Assertions.assertThat(savedBook).usingRecursiveComparison().isEqualTo(dbBook);
     }
 
     @DisplayName("Должен обновлять книгу")
@@ -77,7 +78,7 @@ public class JpaBookRepositoryTest {
         Book savedBook = jpaBookRepository.save(updateBook);
         assertNotNull(savedBook);
         var dbBook = entityManager.find(Book.class, savedBook.getId());
-        checkBooksEqual(dbBook, updateBook);
+        Assertions.assertThat(savedBook).usingRecursiveComparison().isEqualTo(dbBook);
     }
 
     @DisplayName("Должен удалять книгу")
@@ -90,13 +91,4 @@ public class JpaBookRepositoryTest {
         assertNull(dbBook);
     }
 
-    void checkBooksEqual(Book expectedBook, Book actualBook) {
-        var expectedBookGenres = expectedBook.getGenres().stream().map(Genre::getId).toList();
-        var actualBookGenres = actualBook.getGenres().stream().map(Genre::getId).toList();
-        assertAll("Проверка по полям",
-                () -> assertEquals(expectedBook.getTitle(), actualBook.getTitle()),
-                () -> assertEquals(expectedBook.getAuthor().getId(), actualBook.getAuthor().getId()),
-                () -> assertTrue(actualBookGenres.containsAll(expectedBookGenres))
-        );
-    }
 }

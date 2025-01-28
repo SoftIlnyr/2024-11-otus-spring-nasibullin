@@ -22,11 +22,10 @@ public class JpaBookRepository implements BookRepository {
     @Override
     public Optional<Book> findById(long id) {
         TypedQuery<Book> query = em.createQuery("""
-            select b from Book b left join fetch b.genres
-            where b.id = :id
+            select b from Book b where b.id = :id
             """, Book.class);
         query.setParameter("id", id);
-        query.setHint(FETCH.getKey(), em.getEntityGraph("book-author-entity-graph"));
+        query.setHint(FETCH.getKey(), em.getEntityGraph("book-author-genres-entity-graph"));
         List<Book> books = query.getResultList();
         if (books.isEmpty()) {
             return Optional.empty();
@@ -52,6 +51,9 @@ public class JpaBookRepository implements BookRepository {
 
     @Override
     public void deleteById(long id) {
-        em.remove(em.find(Book.class, id));
+        Book book = em.find(Book.class, id);
+        if (book != null) {
+            em.remove(book);
+        }
     }
 }

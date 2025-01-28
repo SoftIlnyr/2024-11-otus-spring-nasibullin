@@ -51,6 +51,7 @@ public class JpaCommentRepositoryTest {
         long bookCommentId = 1L;
         Book book = entityManager.find(Book.class, bookCommentId);
         List<Comment> actualComments = commentRepository.findByBookId(bookCommentId);
+        assertEquals(3, actualComments.size());
     }
 
     @DisplayName("Должен добавлять комментарий к книге")
