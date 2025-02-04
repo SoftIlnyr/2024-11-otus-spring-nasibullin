@@ -46,8 +46,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
                 new EntityNotFoundException("Comment with id %s not found".formatted(commentId)));
         comment.setText(commentText);
-        commentRepository.save(comment);
-        return commentRepository.findById(commentId).get();
+        return commentRepository.save(comment);
     }
 
     @Transactional

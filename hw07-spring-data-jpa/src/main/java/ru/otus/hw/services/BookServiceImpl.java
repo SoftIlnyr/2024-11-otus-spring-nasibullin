@@ -32,7 +32,11 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public List<Book> findAll() {
-        return bookRepository.findAll();
+        var books = bookRepository.findAll();
+        if (!books.isEmpty()) {
+            books.get(0).getGenres().size();
+        }
+        return books;
     }
 
     @Transactional
@@ -51,7 +55,6 @@ public class BookServiceImpl implements BookService {
 
         var book = new Book(0, title, author, genres);
         Book save = bookRepository.save(book);
-        genreRepository.findAllByIdIn(genresIds);
         return save;
     }
 
@@ -76,7 +79,7 @@ public class BookServiceImpl implements BookService {
         book.setGenres(genres);
 
         Book save = bookRepository.save(book);
-        save.getGenres().size();
+//        save.getGenres().size();
         return save;
     }
 
