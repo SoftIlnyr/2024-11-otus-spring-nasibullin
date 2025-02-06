@@ -18,8 +18,8 @@ public class AuthorServiceImpl implements AuthorService {
         return authorRepository.findAll();
     }
 
-    public Author findById(long id) {
+    public Author findById(String id) {
         return authorRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(id)));
+                .orElseThrow(() -> new EntityNotFoundException("Author with id %s not found".formatted(id)));
     }
 }

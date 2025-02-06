@@ -1,15 +1,25 @@
 spring:
   data:
     mongodb:
-      host: localhost
-      port: 27018 # when flapdoodle using
-      database: company
+#      host: localhost
+      port: 0 # when flapdoodle using
+      database: book_store
 
-#de:
-#  flapdoodle:
-#    mongodb:
-#      embedded:
-#        version: 4.0.2
+  shell:
+    interactive:
+      enabled: true
+    noninteractive:
+      enabled: false
+
+    command:
+      version:
+        enabled: false
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
 
 mongock:
   #runner-type: "ApplicationRunner" # default

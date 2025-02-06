@@ -15,10 +15,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Comment {
 
     @Id
-    private long id;
+    private String id;
 
-    private Book book;
+    private String bookId;
 
     private String text;
 
+    public Comment(Book book, String text) {
+        this.bookId = book.getId();
+        this.text = text;
+    }
 }

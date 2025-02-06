@@ -6,7 +6,7 @@ import ru.otus.hw.models.Genre;
 import java.util.List;
 import java.util.Set;
 
-public interface GenreRepository extends MongoRepository<Genre, Long> {
+public interface GenreRepository extends MongoRepository<Genre, String> {
 
-    List<Genre> findAllByIdIn(Set<Long> ids);
+    List<Genre> findAllByIdIn(Set<String> ids);
 }

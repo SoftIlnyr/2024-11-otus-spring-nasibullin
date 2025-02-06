@@ -8,11 +8,11 @@ public interface CommentService {
 
     List<Comment> findAllComments();
 
-    List<Comment> findAllCommentsByBookId(long bookId);
+    List<Comment> findAllCommentsByBookId(String bookId);
 
-    Comment addComment(long bookId, String comment);
+    Comment addComment(String bookId, String comment);
 
-    Comment updateComment(long bookCommentId, String comment);
+    Comment updateComment(String bookCommentId, String comment);
 
-    void deleteCommentById(long bookCommentId);
+    void deleteCommentById(String bookCommentId);
 }

@@ -8,7 +8,6 @@ import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
-import ru.otus.hw.services.CommentService;
 
 import java.util.List;
 
@@ -28,22 +27,22 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Comment> findAllCommentsByBookId(long bookId) {
+    public List<Comment> findAllCommentsByBookId(String bookId) {
         return commentRepository.findByBookId(bookId);
     }
 
     @Transactional
     @Override
-    public Comment addComment(long bookId, String comment) {
+    public Comment addComment(String bookId, String comment) {
         Book book = bookRepository.findById(bookId).orElseThrow(() ->
                 new EntityNotFoundException("Book with id %s not found".formatted(bookId)));
-        Comment bookComment = new Comment(0, book, comment);
+        Comment bookComment = new Comment(book, comment);
         return commentRepository.save(bookComment);
     }
 
     @Transactional
     @Override
-    public Comment updateComment(long commentId, String commentText) {
+    public Comment updateComment(String commentId, String commentText) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
                 new EntityNotFoundException("Comment with id %s not found".formatted(commentId)));
         comment.setText(commentText);
@@ -52,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void deleteCommentById(long bookCommentId) {
+    public void deleteCommentById(String bookCommentId) {
         commentRepository.deleteById(bookCommentId);
     }
 }

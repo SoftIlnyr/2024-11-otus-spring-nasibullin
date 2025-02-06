@@ -17,7 +17,7 @@ import java.util.List;
 public class Book {
 
     @Id
-    private long id;
+    private String id;
 
     private String title;
 
@@ -25,4 +25,9 @@ public class Book {
 
     private List<Genre> genres;
 
+    public Book(String title, Author author, List<Genre> genres) {
+        this.title = title;
+        this.author = author;
+        this.genres = genres;
+    }
 }

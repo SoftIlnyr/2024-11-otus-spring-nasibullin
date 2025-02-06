@@ -7,6 +7,7 @@ import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.List;
@@ -24,8 +25,10 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
+    private final CommentRepository commentRepository;
+
     @Override
-    public Optional<Book> findById(long id) {
+    public Optional<Book> findById(String id) {
         return bookRepository.findById(id);
     }
 
@@ -41,7 +44,7 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public Book insert(String title, long authorId, Set<Long> genresIds) {
+    public Book insert(String title, String authorId, Set<String> genresIds) {
         if (isEmpty(genresIds)) {
             throw new IllegalArgumentException("Genres ids must not be null");
         }
@@ -53,14 +56,13 @@ public class BookServiceImpl implements BookService {
             throw new EntityNotFoundException("One or all genres with ids %s not found".formatted(genresIds));
         }
 
-        var book = new Book(0, title, author, genres);
-        Book save = bookRepository.save(book);
-        return save;
+        var book = new Book(title, author, genres);
+        return bookRepository.save(book);
     }
 
     @Transactional
     @Override
-    public Book update(long id, String title, long authorId, Set<Long> genresIds) {
+    public Book update(String id, String title, String authorId, Set<String> genresIds) {
         Book book = bookRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Book with id %s not found".formatted(id)));
 
@@ -78,15 +80,14 @@ public class BookServiceImpl implements BookService {
         book.setAuthor(author);
         book.setGenres(genres);
 
-        Book save = bookRepository.save(book);
-//        save.getGenres().size();
-        return save;
+        return bookRepository.save(book);
     }
 
     @Transactional
     @Override
-    public void deleteById(long id) {
+    public void deleteById(String id) {
         bookRepository.deleteById(id);
+        commentRepository.deleteByBookId(id);
     }
 
 }
