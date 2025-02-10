@@ -2,7 +2,6 @@ package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.AuthorRepository;
@@ -32,17 +31,11 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findById(id);
     }
 
-    @Transactional
     @Override
     public List<Book> findAll() {
-        var books = bookRepository.findAll();
-        if (!books.isEmpty()) {
-            books.get(0).getGenres().size();
-        }
-        return books;
+        return bookRepository.findAll();
     }
 
-    @Transactional
     @Override
     public Book insert(String title, String authorId, Set<String> genresIds) {
         if (isEmpty(genresIds)) {
@@ -60,11 +53,10 @@ public class BookServiceImpl implements BookService {
         return bookRepository.save(book);
     }
 
-    @Transactional
     @Override
     public Book update(String id, String title, String authorId, Set<String> genresIds) {
-        Book book = bookRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("Book with id %s not found".formatted(id)));
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(id)));
 
         if (isEmpty(genresIds)) {
             throw new IllegalArgumentException("Genres ids must not be null");
@@ -83,11 +75,9 @@ public class BookServiceImpl implements BookService {
         return bookRepository.save(book);
     }
 
-    @Transactional
     @Override
     public void deleteById(String id) {
         bookRepository.deleteById(id);
-        commentRepository.deleteByBookId(id);
     }
 
 }

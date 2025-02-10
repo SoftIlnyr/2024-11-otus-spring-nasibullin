@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
@@ -17,12 +19,14 @@ public class Comment {
     @Id
     private String id;
 
-    private String bookId;
+    @DBRef
+    @Lazy
+    private Book book;
 
     private String text;
 
     public Comment(Book book, String text) {
-        this.bookId = book.getId();
+        this.book = book;
         this.text = text;
     }
 }
