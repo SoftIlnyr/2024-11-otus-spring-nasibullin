@@ -12,7 +12,7 @@ import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.repositories.GenreRepository;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 @ChangeLog(order = "001")
 public class InitChangelog {
@@ -81,9 +81,9 @@ public class InitChangelog {
 
     @ChangeSet(order = "004", id = "004_init_books", author = "softi", runAlways = true)
     public void initBooks(BookRepository bookRepository) {
-        book1 = bookRepository.save(new Book("Book_1", author1, List.of(genre1, genre2)));
-        book2 = bookRepository.save(new Book("Book_2", author2, List.of(genre3, genre4)));
-        book3 = bookRepository.save(new Book("Book_3", author3, List.of(genre5, genre6)));
+        book1 = bookRepository.save(new Book("Book_1", author1, Stream.of(genre1, genre2).toList()));
+        book2 = bookRepository.save(new Book("Book_2", author2, Stream.of(genre3, genre4).toList()));
+        book3 = bookRepository.save(new Book("Book_3", author3, Stream.of(genre5, genre6).toList()));
     }
 
     @ChangeSet(order = "005", id = "005_init_comments", author = "softi", runAlways = true)
