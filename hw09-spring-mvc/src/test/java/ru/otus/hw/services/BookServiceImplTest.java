@@ -11,15 +11,19 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Genre;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -43,6 +47,25 @@ class BookServiceImplTest {
 
     @Autowired
     private MongoOperations mongoOperations;
+
+    @Test
+    @DisplayName("Добавление: должно пройти успешно")
+    void insertBook_success() {
+        String title = "title1";
+        String authorId = "authorId1";
+        String genreId = "genre1";
+        Set<String> genresId = Set.of(genreId);
+        List<Genre> genres = Collections.singletonList(new Genre(genreId));
+
+        Book book = new Book();
+
+        Optional<Author> author = Optional.of(new Author());
+        when(authorRepository.findById(anyString())).thenReturn(author);
+        when(genreRepository.findAllByIdIn(anySet())).thenReturn(genres);
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
+
+        assertEquals(book, bookService.insert(title, authorId, genresId));
+    }
 
     @Test
     @DisplayName("Добавление: Должен выводить ошибку при пустом genreIds")
@@ -81,6 +104,28 @@ class BookServiceImplTest {
 
         assertThrows(EntityNotFoundException.class,
                 () -> bookService.insert(title, authorId, genresId));
+    }
+
+    @Test
+    @DisplayName("Обновление: должно пройти успешно")
+    void updateBook_success() {
+        String bookId = "bookId1";
+        String title = "title1";
+        String authorId = "authorId1";
+        String genreId = "genre1";
+        Set<String> genresId = Set.of(genreId);
+        List<Genre> genres = Collections.singletonList(new Genre(genreId));
+
+        Book book = new Book();
+
+        Optional<Author> author = Optional.of(new Author());
+        when(authorRepository.findById(anyString())).thenReturn(author);
+        when(genreRepository.findAllByIdIn(anySet())).thenReturn(genres);
+        when(bookRepository.findById(anyString())).thenReturn(Optional.of(book));
+
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
+
+        assertEquals(book, bookService.update(bookId, title, authorId, genresId));
     }
 
     @Test

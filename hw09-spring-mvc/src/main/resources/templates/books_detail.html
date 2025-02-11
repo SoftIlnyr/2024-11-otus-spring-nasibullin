@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Books</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div>
+    <div class="book">
+        <a href="#" th:href="@{/books}">back to Books</a>
+    </div>
+    <div id="book_container" class="book">
+        <h6 th:text="${book.id}"></h6>
+        <h2 th:text="${book.title}"></h2>
+        <h4 th:text="${book.author.fullName}"></h4>
+        <div th:each="genre: ${book.genres}">
+            <p th:text="${genre.name}"></p>
+        </div>
+
+        <div class="row">
+            <a href="#" th:href="@{/books/__${book.id}__/actions}">
+                <button type="submit">Edit book</button>
+            </a>
+        </div>
+    </div>
+    <div th:if="${comments.size() > 0}">
+        <h2>Comments</h2>
+        <div class="comment_create_form" >
+            <form th:object="${commentSaveModel}" th:action="@{/books/__${book.id}__/comments}" th:method="post">
+                <div class="row">
+                    <input id="bookId" type="hidden" th:field="${bookId}" th:value="${book.id}"/>
+                    <input id="text" type="text" th:field="*{text}">
+                </div>
+                <div class="row">
+                    <button type="submit">Add comment</button>
+                </div>
+            </form>
+        </div>
+        <div th:each="comment: ${comments}">
+            <div class="comment">
+                <p th:text="${comment.text}"></p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

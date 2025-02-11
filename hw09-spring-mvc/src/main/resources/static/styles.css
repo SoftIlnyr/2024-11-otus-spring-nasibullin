@@ -1,0 +1,65 @@
+body {
+    padding: 20px;
+}
+
+.row {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.basic {
+    border: 1px solid steelblue;
+    width: 300px;
+    border-collapse: collapse;
+}
+
+.basic tr td, th {
+    padding: 5px;
+    border: 1px solid steelblue;
+}
+
+.basic td:last-child, td:first-child {
+    width: 50px;
+}
+
+.book {
+    border: 1px solid #53aa53;
+    width: 300px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.book a {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    color: #51ae51;
+}
+
+.book_create_form {
+    border: 1px solid #53aa53;
+    width: 300px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.comment {
+    border: 1px solid rgba(83, 170, 83, 0.45);
+    width: 200px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.comment_create_form {
+    border: 1px solid #53aa53;
+    width: 300px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}

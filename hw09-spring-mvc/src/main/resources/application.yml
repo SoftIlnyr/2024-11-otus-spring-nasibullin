@@ -1,19 +1,14 @@
 spring:
   data:
     mongodb:
-#      host: localhost
-      port: 0 # when flapdoodle using
+      host: localhost
+      port: 27018 # when flapdoodle using
       database: book_store
 
-  shell:
-    interactive:
-      enabled: true
-    noninteractive:
-      enabled: false
-
-    command:
-      version:
-        enabled: false
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
 
 de:
   flapdoodle:

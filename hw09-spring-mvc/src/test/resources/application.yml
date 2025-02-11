@@ -4,15 +4,11 @@ spring:
       port: 0 # when flapdoodle using
       database: book_store
 
-  shell:
-    interactive:
-      enabled: false
-    noninteractive:
-      enabled: false
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
 
-    command:
-      version:
-        enabled: false
 
 de:
   flapdoodle:

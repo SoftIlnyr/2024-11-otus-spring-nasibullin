@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Books</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div class="book_create_form">
+    <h3>Add book</h3>
+
+    <form action="#" th:action="@{/books}" method="post" th:object="${book_save}">
+        <div class="row">
+            <label for="title">Book Title</label>
+            <input id="title" type="text" th:field="*{title}">
+        </div>
+        <div class="row">
+            <label for="authorId">Author</label>
+            <select id="authorId" th:field="*{authorId}">
+                <option value="" disabled selected>Select author</option>
+                <option th:each="author: ${authors}" th:text="${author.fullName}" th:value="${author.id}"></option>
+            </select>
+        </div>
+        <div class="row">
+            <select id="genreIds" th:field="*{genreIds}" multiple>
+                <option value="" disabled selected>Select genre(s)</option>
+                <option th:each="genre: ${genres}" th:text="${genre.name}" th:value="${genre.id}"></option>
+            </select>
+        </div>
+
+        <div class="row">
+            <button type="submit">Save</button>
+        </div>
+    </form>
+</div>
+<div>
+    <h3 th:if="${books.size() > 0}">Books</h3>
+    <h3 th:if="${books.size() == 0}">Books not Exist</h3>
+    <div id="books_container">
+        <div id="book_container" th:each="book : ${books}" class="book">
+            <h6 th:text="${book.id}"></h6>
+            <a href="books_detail.html" th:href="@{/books/__${book.id}__}"><h2 th:text="${book.title}"></h2></a>
+            <h4 th:text="${book.author.fullName}"></h4>
+            <div th:each="genre: ${book.genres}">
+                <p th:text="${genre.name}"></p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

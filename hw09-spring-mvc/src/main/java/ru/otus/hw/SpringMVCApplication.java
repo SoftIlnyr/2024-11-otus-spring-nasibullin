@@ -6,10 +6,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @EnableMongock
 @SpringBootApplication
-public class Application {
+public class SpringMVCApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+		SpringApplication.run(SpringMVCApplication.class, args);
+		System.out.println("Authors http://localhost:8080/authors");
+		System.out.println("Genres http://localhost:8080/genres");
+		System.out.println("Books http://localhost:8080/books");
 	}
 
 }
