@@ -94,7 +94,6 @@ class BookControllerTest {
 
         mvc.perform(get("/books/"))
                 .andExpect(view().name("books"))
-                .andExpect(model().attribute("books", books))
                 .andExpect(model().attribute("authors", authors))
                 .andExpect(model().attribute("genres", genres))
                 .andExpect(model().attributeExists("book_form"));

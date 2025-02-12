@@ -33,7 +33,6 @@ public class BookController {
     public ModelAndView findAllBooks() {
         ModelAndView modelAndView = new ModelAndView("books");
 
-        modelAndView.addObject("books", bookService.findAll());
         modelAndView.addObject("authors", authorService.findAll());
         modelAndView.addObject("genres", genreService.findAll());
         modelAndView.addObject("book_form", new BookCreateDto());

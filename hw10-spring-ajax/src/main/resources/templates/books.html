@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Books</title>
-    <link type="text/css" rel="stylesheet" th:href="@{/styles.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/books.js}"></script>
 </head>
 <body>
 <div class="book_create_form">
@@ -34,18 +35,10 @@
     </form>
 </div>
 <div>
-    <h3 th:if="${books.size() > 0}">Books</h3>
-    <h3 th:if="${books.size() == 0}">Books not Exist</h3>
-    <div id="books_container">
-        <div id="book_container" th:each="book : ${books}" class="book">
-            <h6 th:text="${book.id}"></h6>
-            <a href="books_detail.html" th:href="@{/books/__${book.id}__}"><h2 th:text="${book.title}"></h2></a>
-            <h4 th:text="${book.author.fullName}"></h4>
-            <div th:each="genre: ${book.genres}">
-                <p th:text="${genre.name}"></p>
-            </div>
-        </div>
-    </div>
+    <button type="button" onclick="getAllBooks()">Load Books</button>
+
+    <h3>Books</h3>
+    <div id="books-ajax"></div>
 </div>
 </body>
 </html>
