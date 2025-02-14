@@ -9,24 +9,26 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Book;
-import ru.otus.hw.models.BookSaveModel;
-import ru.otus.hw.models.Comment;
-import ru.otus.hw.models.CommentSaveModel;
-import ru.otus.hw.models.Genre;
+import ru.otus.hw.dto.AuthorDto;
+import ru.otus.hw.dto.BookCreateDto;
+import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.CommentCreateDto;
+import ru.otus.hw.dto.CommentDto;
+import ru.otus.hw.dto.GenreDto;
+import ru.otus.hw.dto.BookUpdateDto;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.CommentService;
 import ru.otus.hw.services.GenreService;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -55,34 +57,34 @@ class BookControllerTest {
     @MockitoBean
     private CommentService commentService;
 
-    private Author author1 = new Author("1a", "Author_1");
-    private Author author2 = new Author("2a", "Author_2");
-    private List<Author> authors = List.of(author1, author2);
+    private AuthorDto author1 = new AuthorDto("1a", "Author_1");
+    private AuthorDto author2 = new AuthorDto("2a", "Author_2");
+    private List<AuthorDto> authors = List.of(author1, author2);
 
-    private Genre genre1 = new Genre("1g", "Genre_1");
-    private Genre genre2 = new Genre("2g", "Genre_2");
-    private Genre genre3 = new Genre("3g", "Genre_3");
-    private List<Genre> genres = List.of(genre1, genre2, genre3);
+    private GenreDto genre1 = new GenreDto("1g", "Genre_1");
+    private GenreDto genre2 = new GenreDto("2g", "Genre_2");
+    private GenreDto genre3 = new GenreDto("3g", "Genre_3");
+    private List<GenreDto> genres = List.of(genre1, genre2, genre3);
 
-    private Book book1 = new Book("1b", "Book_1", author1, List.of(genre1));
-    private Book book2 = new Book("2b", "Book_2", author2, List.of(genre2, genre3));
-    private List<Book> books = List.of(book1, book2);
+    private BookDto book1 = new BookDto("1b", "Book_1", author1, List.of(genre1));
+    private BookDto book2 = new BookDto("2b", "Book_2", author2, List.of(genre2, genre3));
+    private List<BookDto> books = List.of(book1, book2);
 
-    private Comment comment11 = new Comment("11c", book1, "Comment_1_1");
-    private Comment comment12 = new Comment("12c", book1, "Comment_1_2");
-    private Comment comment21 = new Comment("21c", book2, "Comment_2_1");
+    private CommentDto comment11 = new CommentDto("11c", book1, "Comment_1_1");
+    private CommentDto comment12 = new CommentDto("12c", book1, "Comment_1_2");
+    private CommentDto comment21 = new CommentDto("21c", book2, "Comment_2_1");
+
+    @Captor
+    ArgumentCaptor<BookCreateDto> bookCreateDtoCaptor;
+
+    @Captor
+    ArgumentCaptor<BookUpdateDto> bookUpdateDtoCaptor;
 
     @Captor
     ArgumentCaptor<String> bookIdCaptor;
 
     @Captor
-    ArgumentCaptor<String> bookTitleCaptor;
-
-    @Captor
-    ArgumentCaptor<String> authorIdCaptor;
-
-    @Captor
-    ArgumentCaptor<HashSet<String>> genreIdCaptor;
+    ArgumentCaptor<CommentCreateDto> commentCreateDtoCaptor;
 
     @Test
     void findAll() throws Exception {
@@ -95,52 +97,53 @@ class BookControllerTest {
                 .andExpect(model().attribute("books", books))
                 .andExpect(model().attribute("authors", authors))
                 .andExpect(model().attribute("genres", genres))
-                .andExpect(model().attributeExists("book_save"));
+                .andExpect(model().attributeExists("book_form"));
     }
 
     @Test
     void addNewBook() throws Exception {
-        BookSaveModel bookSaveModel = new BookSaveModel();
-        bookSaveModel.setTitle(book1.getTitle());
-        bookSaveModel.setAuthorId(book1.getAuthor().getId());
-        bookSaveModel.setGenreIds(book1.getGenres().stream().map(Genre::getId).collect(Collectors.toList()));
+        BookCreateDto bookCreateDto = new BookCreateDto();
+        bookCreateDto.setTitle(book1.getTitle());
+        bookCreateDto.setAuthorId(book1.getAuthor().getId());
+        bookCreateDto.setGenreIds(book1.getGenres().stream().map(genre -> genre.getId()).collect(Collectors.toList()));
 
-        when(bookService.insert(bookTitleCaptor.capture(), authorIdCaptor.capture(), genreIdCaptor.capture()))
-                .thenReturn(book1);
-        RequestBuilder request = post("/books").flashAttr("book_save", bookSaveModel);
+        when(bookService.insert(bookCreateDtoCaptor.capture())).thenReturn(book1);
+        RequestBuilder request = post("/books").flashAttr("book_form", bookCreateDto);
         mvc.perform(request)
                 .andExpect(view().name("redirect:/books/" + book1.getId()));
 
-        assertEquals(book1.getTitle(), bookTitleCaptor.getValue());
-        assertEquals(book1.getAuthor().getId(), authorIdCaptor.getValue());
-        assertEquals(book1.getGenres().size(), genreIdCaptor.getValue().size());
+        BookCreateDto capturedValue = bookCreateDtoCaptor.getValue();
+        assertNotNull(capturedValue);
+        assertEquals(book1.getTitle(), capturedValue.getTitle());
+        assertEquals(book1.getAuthor().getId(), capturedValue.getAuthorId());
+        assertEquals(book1.getGenres().size(), capturedValue.getGenreIds().size());
 
-        assertTrue(book1.getGenres().stream().map(Genre::getId).toList().containsAll(genreIdCaptor.getValue()));
+        assertTrue(book1.getGenres().stream().map(genre -> genre.getId()).toList().containsAll(capturedValue.getGenreIds()));
     }
 
     @Test
     void getBookInfo() throws Exception {
-        List<Comment> bookComments = List.of(comment11, comment12);
-        when(bookService.findById(book1.getId())).thenReturn(Optional.of(book1));
+        List<CommentDto> bookComments = List.of(comment11, comment12);
+        when(bookService.findById(book1.getId())).thenReturn(book1);
         when(commentService.findAllCommentsByBookId(book1.getId())).thenReturn(bookComments);
 
         mvc.perform(get("/books/" + book1.getId()))
                 .andExpect(view().name("books_detail"))
                 .andExpect(model().attribute("book", book1))
                 .andExpect(model().attribute("comments", bookComments))
-                .andExpect(model().attributeExists("commentSaveModel"));
+                .andExpect(model().attributeExists("comment_form"));
     }
 
     @Test
     void getBookActions() throws Exception {
 
-        BookSaveModel bookSaveModel = new BookSaveModel();
-        bookSaveModel.setId(book1.getId());
-        bookSaveModel.setTitle(book1.getTitle());
-        bookSaveModel.setAuthorId(book1.getAuthor().getId());
-        bookSaveModel.setGenreIds(book1.getGenres().stream().map(Genre::getId).toList());
+        BookUpdateDto bookUpdateDto = new BookUpdateDto();
+        bookUpdateDto.setId(book1.getId());
+        bookUpdateDto.setTitle(book1.getTitle());
+        bookUpdateDto.setAuthorId(book1.getAuthor().getId());
+        bookUpdateDto.setGenreIds(book1.getGenres().stream().map(genre -> genre.getId()).toList());
 
-        when(bookService.findById(book1.getId())).thenReturn(Optional.of(book1));
+        when(bookService.findById(book1.getId())).thenReturn(book1);
 
         when(authorService.findAll()).thenReturn(authors);
         when(genreService.findAll()).thenReturn(genres);
@@ -149,30 +152,31 @@ class BookControllerTest {
                 .andExpect(view().name("books_actions"))
                 .andExpect(model().attribute("authors", authors))
                 .andExpect(model().attribute("genres", genres))
-                .andExpect(model().attribute("book_save", bookSaveModel));
+                .andExpect(model().attribute("book_form", bookUpdateDto));
     }
 
     @Test
     void updateBook() throws Exception {
-        BookSaveModel bookSaveModel = new BookSaveModel();
-        bookSaveModel.setTitle(book1.getTitle());
-        bookSaveModel.setAuthorId(book1.getAuthor().getId());
-        bookSaveModel.setGenreIds(book1.getGenres().stream().map(Genre::getId).collect(Collectors.toList()));
+        BookUpdateDto bookUpdateDto = new BookUpdateDto();
+        bookUpdateDto.setId(book1.getId());
+        bookUpdateDto.setTitle(book1.getTitle());
+        bookUpdateDto.setAuthorId(book1.getAuthor().getId());
+        bookUpdateDto.setGenreIds(book1.getGenres().stream().map(genre -> genre.getId()).collect(Collectors.toList()));
 
-        when(bookService.update(bookIdCaptor.capture(), bookTitleCaptor.capture(), authorIdCaptor.capture(), genreIdCaptor.capture()))
-                .thenReturn(book1);
+        when(bookService.update(bookUpdateDtoCaptor.capture())).thenReturn(book1);
 
-        RequestBuilder request = put("/books/" + book1.getId()).flashAttr("book_save", bookSaveModel);
+        RequestBuilder request = put("/books/" + book1.getId()).flashAttr("book_form", bookUpdateDto);
 
         mvc.perform(request)
                 .andExpect(view().name("redirect:/books/" + book1.getId()));
 
-        assertEquals(book1.getId(), bookIdCaptor.getValue());
-        assertEquals(book1.getTitle(), bookTitleCaptor.getValue());
-        assertEquals(book1.getAuthor().getId(), authorIdCaptor.getValue());
-        assertEquals(book1.getGenres().size(), genreIdCaptor.getValue().size());
+        BookUpdateDto capturedValue = bookUpdateDtoCaptor.getValue();
+        assertEquals(book1.getId(), capturedValue.getId());
+        assertEquals(book1.getTitle(), capturedValue.getTitle());
+        assertEquals(book1.getAuthor().getId(), capturedValue.getAuthorId());
+        assertEquals(book1.getGenres().size(), capturedValue.getGenreIds().size());
 
-        assertTrue(book1.getGenres().stream().map(Genre::getId).toList().containsAll(genreIdCaptor.getValue()));
+        assertTrue(book1.getGenres().stream().map(genre -> genre.getId()).toList().containsAll(capturedValue.getGenreIds()));
     }
 
     @Test
@@ -187,22 +191,39 @@ class BookControllerTest {
 
     @Test
     void addComment() throws Exception {
-        CommentSaveModel commentSaveModel = new CommentSaveModel();
-        commentSaveModel.setBookId(book1.getId());
+        CommentCreateDto commentCreateDto = new CommentCreateDto();
+        commentCreateDto.setBookId(book1.getId());
         String commentText = "text";
-        commentSaveModel.setText(commentText);
-
-        ArgumentCaptor<String> commentTextCaptor = ArgumentCaptor.forClass(String.class);
+        commentCreateDto.setText(commentText);
 
         RequestBuilder request = post("/books/" + book1.getId() + "/comments")
-                .flashAttr("commentSaveModel", commentSaveModel);
+                .flashAttr("comment_form", commentCreateDto);
 
         mvc.perform(request)
                 .andExpect(view().name("redirect:/books/" + book1.getId()));
 
-        verify(commentService).addComment(bookIdCaptor.capture(), commentTextCaptor.capture());
+        verify(commentService).addComment(commentCreateDtoCaptor.capture());
 
-        assertEquals(book1.getId(), bookIdCaptor.getValue());
-        assertEquals(commentText, commentTextCaptor.getValue());
+        CommentCreateDto capturedValue = commentCreateDtoCaptor.getValue();
+
+        assertNotNull(capturedValue);
+        assertEquals(book1.getId(), capturedValue.getBookId());
+        assertEquals(commentText, capturedValue.getText());
+    }
+
+    @Test
+    void getBookInfo_notFound() throws Exception {
+        when(bookService.findById(anyString())).thenThrow(EntityNotFoundException.class);
+
+        mvc.perform(get("/books/" + "badBookId"))
+                .andExpect(view().name("not_found"));
+    }
+
+    @Test
+    void getBookInfo_serverException() throws Exception {
+        when(bookService.findById(anyString())).thenThrow(RuntimeException.class);
+
+        mvc.perform(get("/books/" + "badBookId"))
+                .andExpect(view().name("server_error"));
     }
 }

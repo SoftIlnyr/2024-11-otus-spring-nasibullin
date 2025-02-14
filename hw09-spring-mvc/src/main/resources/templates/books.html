@@ -9,7 +9,7 @@
 <div class="book_create_form">
     <h3>Add book</h3>
 
-    <form action="#" th:action="@{/books}" method="post" th:object="${book_save}">
+    <form action="#" th:action="@{/books}" method="post" th:object="${book_form}">
         <div class="row">
             <label for="title">Book Title</label>
             <input id="title" type="text" th:field="*{title}">

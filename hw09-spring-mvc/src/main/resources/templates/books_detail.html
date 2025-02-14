@@ -27,7 +27,7 @@
     <div th:if="${comments.size() > 0}">
         <h2>Comments</h2>
         <div class="comment_create_form" >
-            <form th:object="${commentSaveModel}" th:action="@{/books/__${book.id}__/comments}" th:method="post">
+            <form th:object="${comment_form}" th:action="@{/books/__${book.id}__/comments}" th:method="post">
                 <div class="row">
                     <input id="bookId" type="hidden" th:field="${bookId}" th:value="${book.id}"/>
                     <input id="text" type="text" th:field="*{text}">

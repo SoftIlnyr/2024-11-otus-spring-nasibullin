@@ -1,11 +1,15 @@
-package ru.otus.hw.models;
+package ru.otus.hw.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-public class BookSaveModel {
+@NoArgsConstructor
+@AllArgsConstructor
+public class BookUpdateDto {
 
     private String id;
 

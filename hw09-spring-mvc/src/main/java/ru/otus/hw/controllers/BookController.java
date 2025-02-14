@@ -9,17 +9,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.servlet.ModelAndView;
-import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.models.Book;
-import ru.otus.hw.models.BookSaveModel;
-import ru.otus.hw.models.CommentSaveModel;
-import ru.otus.hw.models.Genre;
+import ru.otus.hw.dto.BookCreateDto;
+import ru.otus.hw.dto.CommentCreateDto;
+import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.CommentService;
 import ru.otus.hw.services.GenreService;
-
-import java.util.HashSet;
 
 @RequiredArgsConstructor
 @Controller
@@ -40,14 +36,14 @@ public class BookController {
         modelAndView.addObject("books", bookService.findAll());
         modelAndView.addObject("authors", authorService.findAll());
         modelAndView.addObject("genres", genreService.findAll());
-        modelAndView.addObject("book_save", new BookSaveModel());
+        modelAndView.addObject("book_form", new BookCreateDto());
 
         return modelAndView;
     }
 
     @PostMapping("/books")
-    public String addNewBook(@ModelAttribute("book_save") BookSaveModel book) {
-        var savedBook = bookService.insert(book.getTitle(), book.getAuthorId(), new HashSet<>(book.getGenreIds()));
+    public String addNewBook(@ModelAttribute("book_form") BookCreateDto bookCreateDto) {
+        var savedBook = bookService.insert(bookCreateDto);
 
         return "redirect:/books/" + savedBook.getId();
     }
@@ -56,15 +52,13 @@ public class BookController {
     public ModelAndView getBookInfo(@PathVariable(name = "bookId") String bookId) {
         ModelAndView modelAndView = new ModelAndView("books_detail");
 
-        var book = bookService.findById(bookId).orElseThrow(
-                () -> new EntityNotFoundException("Book with id %s not found".formatted(bookId))
-        );
+        var book = bookService.findById(bookId);
 
         var comments = commentService.findAllCommentsByBookId(bookId);
 
         modelAndView.addObject("book", book);
         modelAndView.addObject("comments", comments);
-        modelAndView.addObject("commentSaveModel", new CommentSaveModel());
+        modelAndView.addObject("comment_form", new CommentCreateDto());
 
         return modelAndView;
     }
@@ -73,16 +67,14 @@ public class BookController {
     public ModelAndView getBookActions(@PathVariable("bookId") String bookId) {
         ModelAndView modelAndView = new ModelAndView("books_actions");
 
-        var book = bookService.findById(bookId).orElseThrow(
-                () -> new EntityNotFoundException("Book with id %s not found".formatted(bookId))
-        );
+        var book = bookService.findById(bookId);
 
-        BookSaveModel bookSaveModel = new BookSaveModel();
-        bookSaveModel.setId(book.getId());
-        bookSaveModel.setTitle(book.getTitle());
-        bookSaveModel.setAuthorId(book.getAuthor().getId());
-        bookSaveModel.setGenreIds(book.getGenres().stream().map(Genre::getId).toList());
-        modelAndView.addObject("book_save", bookSaveModel);
+        BookUpdateDto bookUpdateDto = new BookUpdateDto();
+        bookUpdateDto.setId(book.getId());
+        bookUpdateDto.setTitle(book.getTitle());
+        bookUpdateDto.setAuthorId(book.getAuthor().getId());
+        bookUpdateDto.setGenreIds(book.getGenres().stream().map(genre -> genre.getId()).toList());
+        modelAndView.addObject("book_form", bookUpdateDto);
 
         modelAndView.addObject("authors", authorService.findAll());
         modelAndView.addObject("genres", genreService.findAll());
@@ -91,8 +83,9 @@ public class BookController {
     }
 
     @PutMapping("books/{bookId}")
-    public String updateBook(@PathVariable("bookId") String bookId, @ModelAttribute("book_save") BookSaveModel book) {
-        Book savedBook = bookService.update(bookId, book.getTitle(), book.getAuthorId(), new HashSet<>(book.getGenreIds()));
+    public String updateBook(@PathVariable("bookId") String bookId,
+                             @ModelAttribute("book_form") BookUpdateDto bookUpdateDto) {
+        var savedBook = bookService.update(bookUpdateDto);
 
         return String.format("redirect:/books/%s", savedBook.getId());
     }
@@ -106,8 +99,8 @@ public class BookController {
 
     @PostMapping("/books/{bookId}/comments")
     public String addComment(@PathVariable("bookId") String bookId,
-                             @ModelAttribute("commentSaveModel") CommentSaveModel commentSaveModel) {
-        var savedComment = commentService.addComment(bookId, commentSaveModel.getText());
+                             @ModelAttribute("comment_form") CommentCreateDto commentCreateDto) {
+        var savedComment = commentService.addComment(commentCreateDto);
 
         return String.format("redirect:/books/%s", bookId);
     }
