@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Genres</title>
+  <link type="text/css" rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div>
+  <h3 th:if="${genres.size() > 0}">Genres</h3>
+  <h3 th:if="${genres.size() == 0}">Genres not Exist</h3>
+  <table th:if="${genres.size() > 0}" class="basic">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="genre : ${genres}">
+      <td th:text="${genre.id}"></td>
+      <td th:text="${genre.name}"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
