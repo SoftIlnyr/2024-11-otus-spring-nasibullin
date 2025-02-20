@@ -1,13 +1,9 @@
-package ru.otus.hw.controllers;
+package ru.otus.hw.view;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.servlet.ModelAndView;
 import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.CommentCreateDto;
@@ -19,7 +15,7 @@ import ru.otus.hw.services.GenreService;
 
 @RequiredArgsConstructor
 @Controller
-public class BookController {
+public class BookViewController {
 
     private final BookService bookService;
 
@@ -30,7 +26,7 @@ public class BookController {
     private final CommentService commentService;
 
     @GetMapping(path = {"/books", "/books/"})
-    public ModelAndView findAllBooks() {
+    public ModelAndView getBooks() {
         ModelAndView modelAndView = new ModelAndView("books");
 
         modelAndView.addObject("authors", authorService.findAll());
@@ -38,13 +34,6 @@ public class BookController {
         modelAndView.addObject("book_form", new BookCreateDto());
 
         return modelAndView;
-    }
-
-    @PostMapping("/books")
-    public String addNewBook(@ModelAttribute("book_form") BookCreateDto bookCreateDto) {
-        var savedBook = bookService.insert(bookCreateDto);
-
-        return "redirect:/books/" + savedBook.getId();
     }
 
     @GetMapping("/books/{bookId}")
@@ -79,28 +68,5 @@ public class BookController {
         modelAndView.addObject("genres", genreService.findAll());
 
         return modelAndView;
-    }
-
-    @PutMapping("books/{bookId}")
-    public String updateBook(@PathVariable("bookId") String bookId,
-                             @ModelAttribute("book_form") BookUpdateDto bookUpdateDto) {
-        var savedBook = bookService.update(bookUpdateDto);
-
-        return String.format("redirect:/books/%s", savedBook.getId());
-    }
-
-    @DeleteMapping("/books/{bookId}")
-    public String deleteBook(@PathVariable("bookId") String bookId) {
-        bookService.deleteById(bookId);
-
-        return "redirect:/books";
-    }
-
-    @PostMapping("/books/{bookId}/comments")
-    public String addComment(@PathVariable("bookId") String bookId,
-                             @ModelAttribute("comment_form") CommentCreateDto commentCreateDto) {
-        var savedComment = commentService.addComment(commentCreateDto);
-
-        return String.format("redirect:/books/%s", bookId);
     }
 }

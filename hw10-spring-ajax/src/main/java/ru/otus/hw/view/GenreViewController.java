@@ -1,4 +1,4 @@
-package ru.otus.hw.controllers;
+package ru.otus.hw.view;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -8,7 +8,7 @@ import ru.otus.hw.services.GenreService;
 
 @RequiredArgsConstructor
 @Controller
-public class GenreController {
+public class GenreViewController {
 
     private final GenreService genreService;
 

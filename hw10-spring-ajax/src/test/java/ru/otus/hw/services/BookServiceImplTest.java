@@ -90,20 +90,6 @@ class BookServiceImplTest {
     }
 
     @Test
-    @DisplayName("Добавление: Должен выводить ошибку при пустом genreIds")
-    void insertBook_genreIds_empty() {
-        List<String> genreIds = Collections.emptyList();
-
-        BookCreateDto bookCreateDto = new BookCreateDto();
-        bookCreateDto.setTitle(title);
-        bookCreateDto.setAuthorId(author1.getId());
-        bookCreateDto.setGenreIds(genreIds);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> bookService.insert(bookCreateDto));
-    }
-
-    @Test
     @DisplayName("Добавление: Должен выводить ошибку при отсутствии автора в БД")
     void insertBook_author_not_exist() {
         List<String> genreIds = List.of(genre1.getId());
@@ -184,24 +170,6 @@ class BookServiceImplTest {
         when(bookRepository.findById(anyString())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class,
-                () -> bookService.update(bookUpdateDto));
-    }
-
-    @Test
-    @DisplayName("Обновление: Должен выводить ошибку при отсутствии книги")
-    void updateBook_genreIds_empty() {
-        List<String> genreIds = Collections.emptyList();
-
-        BookUpdateDto bookUpdateDto = new BookUpdateDto();
-        bookUpdateDto.setId(bookId);
-        bookUpdateDto.setTitle(title);
-        bookUpdateDto.setAuthorId(author1.getId());
-        bookUpdateDto.setGenreIds(genreIds);
-
-        Optional<Book> book = Optional.of(new Book());
-        when(bookRepository.findById(anyString())).thenReturn(book);
-
-        assertThrows(IllegalArgumentException.class,
                 () -> bookService.update(bookUpdateDto));
     }
 

@@ -42,16 +42,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto insert(BookCreateDto bookCreateDto) {
-        if (bookCreateDto == null) {
-            throw new IllegalArgumentException("bookCreateDto cannot be null");
-        }
-
         String title = bookCreateDto.getTitle();
         List<String> genreIds = bookCreateDto.getGenreIds();
-
-        if (isEmpty(genreIds)) {
-            throw new IllegalArgumentException("Genres ids must not be null");
-        }
 
         var author = getAuthor(bookCreateDto.getAuthorId());
         var genres = getGenres(genreIds);
@@ -63,15 +55,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto update(BookUpdateDto bookUpdateDto) {
-        if (bookUpdateDto == null) {
-            throw new IllegalArgumentException("bookUpdateDto cannot be null");
-        }
-
         Book book = getBook(bookUpdateDto.getId());
-
-        if (isEmpty(bookUpdateDto.getGenreIds())) {
-            throw new IllegalArgumentException("Genres ids must not be null");
-        }
 
         String authorId = bookUpdateDto.getAuthorId();
         var author = getAuthor(authorId);

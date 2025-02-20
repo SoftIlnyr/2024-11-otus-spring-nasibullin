@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Books</title>
     <link type="text/css" rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/books.js}"></script>
 </head>
 <body>
 <div>
@@ -14,34 +15,35 @@
     <div class="book_create_form">
         <h3>Edit book</h3>
 
-        <form action="#" th:action="@{/books/__${book_form.id}__}" th:method="put" th:object="${book_form}">
-            <input type="hidden" th:field="*{id}" th:value="${book_form.id}">
+        <form>
+            <input type="hidden" id="bookId" th:value="${book_form.id}">
             <div class="row">
                 <label for="title">Book Title</label>
-                <input id="title" type="text" th:field="*{title}">
+                <input id="title" type="text">
             </div>
             <div class="row">
                 <label for="authorId">Author</label>
-                <select id="authorId" th:field="*{authorId}">
+                <select id="authorId">
                     <option value="" disabled selected>Select author</option>
                     <option th:each="author: ${authors}" th:text="${author.fullName}" th:value="${author.id}"></option>
                 </select>
             </div>
             <div class="row">
-                <select id="genreIds" th:field="*{genreIds}" multiple>
+                <select id="genreIds" multiple>
                     <option value="" disabled selected>Select genre(s)</option>
                     <option th:each="genre: ${genres}" th:text="${genre.name}" th:value="${genre.id}"></option>
                 </select>
             </div>
 
             <div class="row">
-                <button type="submit">Save changes</button>
+                <button type="button" onclick="updateBook()">Save changes</button>
             </div>
         </form>
 
         <div class="row">
-            <form th:object="${book_form}" th:action="@{/books/__${book_form.id}__}" th:method="delete">
-                <button type="submit">Delete book</button>
+            <form>
+                <input type="hidden" id="deleteBookId" th:value="${book_form.id}">
+                <button type="button" onclick="deleteBook()">Delete book</button>
             </form>
         </div>
     </div>

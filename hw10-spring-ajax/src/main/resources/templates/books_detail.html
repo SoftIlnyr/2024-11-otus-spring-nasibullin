@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Books</title>
     <link type="text/css" rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/books.js}"></script>
 </head>
 <body>
 <div>
@@ -24,19 +25,19 @@
             </a>
         </div>
     </div>
+    <div class="comment_create_form" >
+        <form>
+            <div class="row">
+                <input id="bookId" type="hidden" th:value="${book.id}"/>
+                <input id="text" type="text">
+            </div>
+            <div class="row">
+                <button type="button" onclick="createBookComment()">Add comment</button>
+            </div>
+        </form>
+    </div>
     <div th:if="${comments.size() > 0}">
         <h2>Comments</h2>
-        <div class="comment_create_form" >
-            <form th:object="${comment_form}" th:action="@{/books/__${book.id}__/comments}" th:method="post">
-                <div class="row">
-                    <input id="bookId" type="hidden" th:field="${bookId}" th:value="${book.id}"/>
-                    <input id="text" type="text" th:field="*{text}">
-                </div>
-                <div class="row">
-                    <button type="submit">Add comment</button>
-                </div>
-            </form>
-        </div>
         <div th:each="comment: ${comments}">
             <div class="comment">
                 <p th:text="${comment.text}"></p>
