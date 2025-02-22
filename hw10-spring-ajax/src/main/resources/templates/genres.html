@@ -4,23 +4,19 @@
   <meta charset="UTF-8">
   <title>Genres</title>
   <link type="text/css" rel="stylesheet" th:href="@{/css/styles.css}">
+  <script th:src="@{/js/genres.js}"></script>
 </head>
-<body>
+<body onload="getAllGenres()">
 <div>
-  <h3 th:if="${genres.size() > 0}">Genres</h3>
-  <h3 th:if="${genres.size() == 0}">Genres not Exist</h3>
-  <table th:if="${genres.size() > 0}" class="basic">
+  <h3>Genres</h3>
+  <table class="basic">
     <thead>
     <tr>
       <th>ID</th>
       <th>Name</th>
     </tr>
     </thead>
-    <tbody>
-    <tr th:each="genre : ${genres}">
-      <td th:text="${genre.id}"></td>
-      <td th:text="${genre.name}"></td>
-    </tr>
+    <tbody id="genres-table">
     </tbody>
   </table>
 </div>

@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.otus.hw.dto.ErrorDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 
 @Log4j2
@@ -12,14 +13,22 @@ import ru.otus.hw.exceptions.EntityNotFoundException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+    public ResponseEntity<ErrorDto> handleEntityNotFoundException(EntityNotFoundException ex) {
         log.error(ex);
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+
+        ErrorDto errorDto = new ErrorDto();
+        errorDto.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleInternalServerError(Exception ex) {
+    public ResponseEntity<ErrorDto> handleInternalServerError(Exception ex) {
         log.error(ex);
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        ErrorDto errorDto = new ErrorDto();
+        errorDto.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
