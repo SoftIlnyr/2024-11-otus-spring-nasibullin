@@ -64,36 +64,36 @@ public class InitChangelog {
 
     @ChangeSet(order = "002", id = "002_init_authors", author = "softi", runAlways = true)
     public void initAuthors(AuthorRepository authorRepository) {
-        author1 = authorRepository.save(new Author("Author_1"));
-        author2 = authorRepository.save(new Author("Author_2"));
-        author3 = authorRepository.save(new Author("Author_3"));
+        author1 = authorRepository.save(new Author("Author_1")).block();
+        author2 = authorRepository.save(new Author("Author_2")).block();
+        author3 = authorRepository.save(new Author("Author_3")).block();
     }
 
     @ChangeSet(order = "003", id = "003_init_genres", author = "softi", runAlways = true)
     public void initGenres(GenreRepository genreRepository) {
-        genre1 = genreRepository.save(new Genre("Genre_1"));
-        genre2 = genreRepository.save(new Genre("Genre_2"));
-        genre3 = genreRepository.save(new Genre("Genre_3"));
-        genre4 = genreRepository.save(new Genre("Genre_4"));
-        genre5 = genreRepository.save(new Genre("Genre_5"));
-        genre6 = genreRepository.save(new Genre("Genre_6"));
+        genre1 = genreRepository.save(new Genre("Genre_1")).block();
+        genre2 = genreRepository.save(new Genre("Genre_2")).block();
+        genre3 = genreRepository.save(new Genre("Genre_3")).block();
+        genre4 = genreRepository.save(new Genre("Genre_4")).block();
+        genre5 = genreRepository.save(new Genre("Genre_5")).block();
+        genre6 = genreRepository.save(new Genre("Genre_6")).block();
     }
 
     @ChangeSet(order = "004", id = "004_init_books", author = "softi", runAlways = true)
     public void initBooks(BookRepository bookRepository) {
-        book1 = bookRepository.save(new Book("Book_1", author1, Stream.of(genre1, genre2).toList()));
-        book2 = bookRepository.save(new Book("Book_2", author2, Stream.of(genre3, genre4).toList()));
-        book3 = bookRepository.save(new Book("Book_3", author3, Stream.of(genre5, genre6).toList()));
+        book1 = bookRepository.save(new Book("Book_1", author1, Stream.of(genre1, genre2).toList())).block();
+        book2 = bookRepository.save(new Book("Book_2", author2, Stream.of(genre3, genre4).toList())).block();
+        book3 = bookRepository.save(new Book("Book_3", author3, Stream.of(genre5, genre6).toList())).block();
     }
 
     @ChangeSet(order = "005", id = "005_init_comments", author = "softi", runAlways = true)
     public void initComments(CommentRepository commentRepository) {
-        comment11 = commentRepository.save(new Comment(book1, "Comment_1_1"));
-        comment12 = commentRepository.save(new Comment(book1, "Comment_1_2"));
-        comment12 = commentRepository.save(new Comment(book1, "Comment_1_3"));
-        comment21 = commentRepository.save(new Comment(book2, "Comment_2_1"));
-        comment31 = commentRepository.save(new Comment(book3, "Comment_3_1"));
-        comment31 = commentRepository.save(new Comment(book3, "Comment_3_2"));
+        comment11 = commentRepository.save(new Comment(book1, "Comment_1_1")).block();
+        comment12 = commentRepository.save(new Comment(book1, "Comment_1_2")).block();
+        comment12 = commentRepository.save(new Comment(book1, "Comment_1_3")).block();
+        comment21 = commentRepository.save(new Comment(book2, "Comment_2_1")).block();
+        comment31 = commentRepository.save(new Comment(book3, "Comment_3_1")).block();
+        comment31 = commentRepository.save(new Comment(book3, "Comment_3_2")).block();
     }
 
 }

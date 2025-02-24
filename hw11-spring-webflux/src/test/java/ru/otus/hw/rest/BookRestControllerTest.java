@@ -1,17 +1,12 @@
 package ru.otus.hw.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.web.reactive.function.client.WebClient;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
@@ -19,197 +14,158 @@ import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.dto.CommentCreateDto;
 import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.services.AuthorService;
-import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.CommentService;
-import ru.otus.hw.services.GenreService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static ru.otus.hw.mongock.changelog.TestValues.AUTHOR_1;
+import static ru.otus.hw.mongock.changelog.TestValues.AUTHOR_2;
+import static ru.otus.hw.mongock.changelog.TestValues.AUTHOR_3;
+import static ru.otus.hw.mongock.changelog.TestValues.AUTHOR_4;
+import static ru.otus.hw.mongock.changelog.TestValues.BOOKS;
+import static ru.otus.hw.mongock.changelog.TestValues.BOOK_1;
+import static ru.otus.hw.mongock.changelog.TestValues.BOOK_2;
+import static ru.otus.hw.mongock.changelog.TestValues.BOOK_3;
+import static ru.otus.hw.mongock.changelog.TestValues.GENRE_1;
+import static ru.otus.hw.mongock.changelog.TestValues.GENRE_2;
+import static ru.otus.hw.mongock.changelog.TestValues.GENRE_3;
+import static ru.otus.hw.mongock.changelog.TestValues.GENRE_4;
+import static ru.otus.hw.mongock.changelog.TestValues.GENRE_5;
 
-@WebMvcTest(value = BookRestController.class)
-@Import(GlobalExceptionHandler.class)
-@TestPropertySource(properties = {"mongock.enabled=false"})
-class BookRestControllerTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class BookRestControllerTest {
 
-    @Autowired
-    private MockMvc mvc;
+    @LocalServerPort
+    private int port;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private WebClient webClient;
 
-    @MockitoBean
-    private BookService bookService;
 
-    @MockitoBean
-    private AuthorService authorService;
+    private final AuthorDto authorDto1 = new AuthorDto(AUTHOR_1.getId(), AUTHOR_1.getFullName());
 
-    @MockitoBean
-    private GenreService genreService;
+    private final AuthorDto authorDto2 = new AuthorDto(AUTHOR_2.getId(), AUTHOR_2.getFullName());
 
-    @MockitoBean
-    private CommentService commentService;
+    private final AuthorDto authorDto3 = new AuthorDto(AUTHOR_3.getId(), AUTHOR_3.getFullName());
 
-    private AuthorDto author1 = new AuthorDto("1a", "Author_1");
-    private AuthorDto author2 = new AuthorDto("2a", "Author_2");
-    private List<AuthorDto> authors = List.of(author1, author2);
+    private final AuthorDto authorDto4 = new AuthorDto(AUTHOR_4.getId(), AUTHOR_4.getFullName());
 
-    private GenreDto genre1 = new GenreDto("1g", "Genre_1");
-    private GenreDto genre2 = new GenreDto("2g", "Genre_2");
-    private GenreDto genre3 = new GenreDto("3g", "Genre_3");
-    private List<GenreDto> genres = List.of(genre1, genre2, genre3);
 
-    private BookDto book1 = new BookDto("1b", "Book_1", author1, List.of(genre1));
-    private BookDto book2 = new BookDto("2b", "Book_2", author2, List.of(genre2, genre3));
-    private List<BookDto> books = List.of(book1, book2);
+    private GenreDto genreDto1 = new GenreDto(GENRE_1.getId(), GENRE_1.getName());
 
-    private CommentDto comment11 = new CommentDto("11c", book1, "Comment_1_1");
-    private CommentDto comment12 = new CommentDto("12c", book1, "Comment_1_2");
-    private CommentDto comment21 = new CommentDto("21c", book2, "Comment_2_1");
+    private GenreDto genreDto2 = new GenreDto(GENRE_2.getId(), GENRE_2.getName());
 
-    @Captor
-    ArgumentCaptor<BookCreateDto> bookCreateDtoCaptor;
+    private GenreDto genreDto3 = new GenreDto(GENRE_3.getId(), GENRE_3.getName());
 
-    @Captor
-    ArgumentCaptor<BookUpdateDto> bookUpdateDtoCaptor;
+    private GenreDto genreDto4 = new GenreDto(GENRE_4.getId(), GENRE_4.getName());
 
-    @Captor
-    ArgumentCaptor<String> bookIdCaptor;
+    private GenreDto genreDto5 = new GenreDto(GENRE_5.getId(), GENRE_5.getName());
 
-    @Captor
-    ArgumentCaptor<CommentCreateDto> commentCreateDtoCaptor;
 
-    @Test
-    void findAllBooks() throws Exception {
-        when(bookService.findAll()).thenReturn(books);
+    private BookDto bookDto1 = new BookDto(BOOK_1.getId(), BOOK_1.getTitle(), authorDto1,
+            List.of(genreDto1, genreDto2, genreDto3));
 
-        mvc.perform(get("/api/books"))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(books)));
+    private BookDto bookDto2 = new BookDto(BOOK_2.getId(), BOOK_2.getTitle(), authorDto2, List.of(genreDto3, genreDto4));
+
+    private BookDto bookDto3 = new BookDto(BOOK_3.getId(), BOOK_3.getTitle(), authorDto3, List.of(genreDto5));
+
+    @BeforeEach
+    void setUp() {
+        webClient = WebClient.create(String.format("http://localhost:%d", port));
     }
 
     @Test
-    void addNewBook() throws Exception {
+    void findAllBooks() {
+        var expectedSize = BOOKS.size();
+
+        List<BookDto> result = webClient
+                .get().uri("/api/books")
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .retrieve()
+                .bodyToFlux(BookDto.class)
+                .take(expectedSize)
+                .collectList()
+                .block();
+
+        assertThat(result)
+                .hasSize(expectedSize)
+                .contains(bookDto1, bookDto2, bookDto3);
+    }
+
+    @Test
+    void addNewBook() {
+
         BookCreateDto bookCreateDto = new BookCreateDto();
-        bookCreateDto.setTitle(book1.getTitle());
-        bookCreateDto.setAuthorId(book1.getAuthor().getId());
-        bookCreateDto.setGenreIds(book1.getGenres().stream().map(genre -> genre.getId()).collect(Collectors.toList()));
+        bookCreateDto.setTitle("Test title");
+        bookCreateDto.setAuthorId(authorDto4.getId());
+        bookCreateDto.setGenreIds(List.of(genreDto2.getId(), genreDto4.getId()));
 
-        when(bookService.insert(bookCreateDtoCaptor.capture())).thenReturn(book1);
+        BookDto savedBook = webClient.post()
+                .uri("/api/books")
+                .bodyValue(bookCreateDto)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(BookDto.class)
+                .block();
 
-        RequestBuilder request = post("/api/books")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(bookCreateDto));
-        mvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(book1)));
-
-        BookCreateDto capturedValue = bookCreateDtoCaptor.getValue();
-        assertNotNull(capturedValue);
-        assertEquals(book1.getTitle(), capturedValue.getTitle());
-        assertEquals(book1.getAuthor().getId(), capturedValue.getAuthorId());
-        assertEquals(book1.getGenres().size(), capturedValue.getGenreIds().size());
-
-        assertTrue(book1.getGenres().stream().map(genre -> genre.getId()).toList().containsAll(capturedValue.getGenreIds()));
+        assertNotNull(savedBook);
+        assertEquals(bookCreateDto.getTitle(), savedBook.getTitle());
+        assertEquals(authorDto4, savedBook.getAuthor());
+        assertThat(savedBook.getGenres()).containsExactly(genreDto2, genreDto4);
     }
 
     @Test
-    void updateBook() throws Exception {
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void updateBook() {
         BookUpdateDto bookUpdateDto = new BookUpdateDto();
-        bookUpdateDto.setId(book1.getId());
-        bookUpdateDto.setTitle(book1.getTitle());
-        bookUpdateDto.setAuthorId(book1.getAuthor().getId());
-        bookUpdateDto.setGenreIds(book1.getGenres().stream().map(genre -> genre.getId()).collect(Collectors.toList()));
+        bookUpdateDto.setId(bookDto1.getId());
+        bookUpdateDto.setTitle("Test title");
+        bookUpdateDto.setAuthorId(authorDto4.getId());
+        bookUpdateDto.setGenreIds(List.of(genreDto2.getId(), genreDto4.getId()));
 
-        when(bookService.update(bookUpdateDtoCaptor.capture())).thenReturn(book1);
+        BookDto savedBook = webClient.put()
+                .uri("/api/books/" + bookDto1.getId())
+                .bodyValue(bookUpdateDto)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(BookDto.class)
+                .block();
 
-        RequestBuilder request = put("/api/books/" + book1.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(bookUpdateDto));
-
-        mvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(book1)));
-
-        BookUpdateDto capturedValue = bookUpdateDtoCaptor.getValue();
-        assertEquals(book1.getId(), capturedValue.getId());
-        assertEquals(book1.getTitle(), capturedValue.getTitle());
-        assertEquals(book1.getAuthor().getId(), capturedValue.getAuthorId());
-        assertEquals(book1.getGenres().size(), capturedValue.getGenreIds().size());
-
-        assertTrue(book1.getGenres().stream().map(genre -> genre.getId()).toList().containsAll(capturedValue.getGenreIds()));
+        assertNotNull(savedBook);
+        assertEquals(bookUpdateDto.getId(), savedBook.getId());
+        assertEquals(bookUpdateDto.getTitle(), savedBook.getTitle());
+        assertEquals(authorDto4, savedBook.getAuthor());
+        assertThat(savedBook.getGenres()).containsExactly(genreDto2, genreDto4);
     }
 
     @Test
-    void deleteBook() throws Exception {
-        mvc.perform(delete("/api/books/" + book1.getId()))
-                .andExpect(status().isOk());
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void deleteBook() {
+        String message = webClient.delete()
+                .uri("/api/books/" + bookDto1.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
 
-        verify(bookService).deleteById(bookIdCaptor.capture());
-
-        assertEquals(book1.getId(), bookIdCaptor.getValue());
+        assertEquals("Book with id %s deleted.".formatted(bookDto1.getId()), message);
     }
 
     @Test
-    void addComment() throws Exception {
+    void addComment() {
         CommentCreateDto commentCreateDto = new CommentCreateDto();
-        commentCreateDto.setBookId(book1.getId());
-        String commentText = "text";
-        commentCreateDto.setText(commentText);
+        commentCreateDto.setBookId(bookDto1.getId());
+        commentCreateDto.setText("Test comment");
 
-        RequestBuilder request = post("/api/books/" + book1.getId() + "/comments")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(commentCreateDto));
+        CommentDto result = webClient
+                .post().uri("/api/books/" + bookDto1.getId() + "/comments")
+                .bodyValue(commentCreateDto)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(CommentDto.class)
+                .block();
 
-        mvc.perform(request)
-                .andExpect(status().isOk());
-
-        verify(commentService).addComment(commentCreateDtoCaptor.capture());
-
-        CommentCreateDto capturedValue = commentCreateDtoCaptor.getValue();
-
-        assertNotNull(capturedValue);
-        assertEquals(book1.getId(), capturedValue.getBookId());
-        assertEquals(commentText, capturedValue.getText());
-    }
-
-    @Test
-    void getBookInfo_notFound() throws Exception {
-        BookUpdateDto bookUpdateDto = new BookUpdateDto();
-        bookUpdateDto.setId(book1.getId());
-        bookUpdateDto.setTitle(book1.getTitle());
-        bookUpdateDto.setAuthorId(book1.getAuthor().getId());
-        bookUpdateDto.setGenreIds(book1.getGenres().stream().map(genre -> genre.getId()).collect(Collectors.toList()));
-
-        when(bookService.update(bookUpdateDtoCaptor.capture())).thenThrow(EntityNotFoundException.class);
-
-        RequestBuilder request = put("/api/books/" + book1.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(bookUpdateDto));
-
-        mvc.perform(request)
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void getBookInfo_serverException() throws Exception {
-        when(bookService.findById(anyString())).thenThrow(RuntimeException.class);
-
-        mvc.perform(get("/api/books/badBookId"))
-                .andExpect(status().isInternalServerError());
+        assertNotNull(result);
+        assertEquals(commentCreateDto.getText(), result.getText());
     }
 }

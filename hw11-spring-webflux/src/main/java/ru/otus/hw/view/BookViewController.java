@@ -2,9 +2,10 @@ package ru.otus.hw.view;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.servlet.ModelAndView;
+import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.CommentCreateDto;
 import ru.otus.hw.dto.BookUpdateDto;
@@ -26,47 +27,45 @@ public class BookViewController {
     private final CommentService commentService;
 
     @GetMapping(path = {"/books", "/books/"})
-    public ModelAndView getBooks() {
-        ModelAndView modelAndView = new ModelAndView("books");
+    public Mono<String> getBooks(Model model) {
+        model.addAttribute("authors", authorService.findAll());
+        model.addAttribute("genres", genreService.findAll());
+        model.addAttribute("book_form", new BookCreateDto());
 
-        modelAndView.addObject("authors", authorService.findAll());
-        modelAndView.addObject("genres", genreService.findAll());
-        modelAndView.addObject("book_form", new BookCreateDto());
-
-        return modelAndView;
+        return Mono.just("books");
     }
 
     @GetMapping("/books/{bookId}")
-    public ModelAndView getBookInfo(@PathVariable(name = "bookId") String bookId) {
-        ModelAndView modelAndView = new ModelAndView("books_detail");
-
+    public Mono<String> getBookInfo(@PathVariable(name = "bookId") String bookId, Model model) {
         var book = bookService.findById(bookId);
 
         var comments = commentService.findAllCommentsByBookId(bookId);
 
-        modelAndView.addObject("book", book);
-        modelAndView.addObject("comments", comments);
-        modelAndView.addObject("comment_form", new CommentCreateDto());
+        model.addAttribute("book", book);
+        model.addAttribute("comments", comments);
+        model.addAttribute("comment_form", new CommentCreateDto());
 
-        return modelAndView;
+        return Mono.just("books_detail");
     }
 
     @GetMapping("books/{bookId}/actions")
-    public ModelAndView getBookActions(@PathVariable("bookId") String bookId) {
-        ModelAndView modelAndView = new ModelAndView("books_actions");
+    public Mono<String> getBookActions(@PathVariable("bookId") String bookId, Model model) {
+        var bookMono = bookService.findById(bookId);
 
-        var book = bookService.findById(bookId);
+        Mono<BookUpdateDto> bookUpdateDtoMono = bookMono.map(book -> {
+                    BookUpdateDto bookUpdateDto = new BookUpdateDto();
+                    bookUpdateDto.setId(book.getId());
+                    bookUpdateDto.setTitle(book.getTitle());
+                    bookUpdateDto.setAuthorId(book.getAuthor().getId());
+                    bookUpdateDto.setGenreIds(book.getGenres().stream().map(genre -> genre.getId()).toList());
+                    return bookUpdateDto;
+                }
+        );
 
-        BookUpdateDto bookUpdateDto = new BookUpdateDto();
-        bookUpdateDto.setId(book.getId());
-        bookUpdateDto.setTitle(book.getTitle());
-        bookUpdateDto.setAuthorId(book.getAuthor().getId());
-        bookUpdateDto.setGenreIds(book.getGenres().stream().map(genre -> genre.getId()).toList());
-        modelAndView.addObject("book_form", bookUpdateDto);
+        model.addAttribute("book_form", bookUpdateDtoMono);
+        model.addAttribute("authors", authorService.findAll());
+        model.addAttribute("genres", genreService.findAll());
 
-        modelAndView.addObject("authors", authorService.findAll());
-        modelAndView.addObject("genres", genreService.findAll());
-
-        return modelAndView;
+        return Mono.just("books_actions");
     }
 }
