@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Books</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/books.js}"></script>
+</head>
+<body onload="getAllBooks()">
+<div class="book_create_form">
+    <h3>Add book</h3>
+
+    <form action="">
+        <div class="row">
+            <label for="title">Book Title</label>
+            <input id="title" type="text">
+        </div>
+        <div class="row">
+            <label for="authorId">Author</label>
+            <select id="authorId">
+                <option value="" disabled selected>Select author</option>
+                <option th:each="author: ${authors}" th:text="${author.fullName}" th:value="${author.id}"></option>
+            </select>
+        </div>
+        <div class="row">
+            <select id="genreIds" multiple>
+                <option value="" disabled selected>Select genre(s)</option>
+                <option th:each="genre: ${genres}" th:text="${genre.name}" th:value="${genre.id}"></option>
+            </select>
+        </div>
+
+        <div class="row">
+            <button type="button" onclick="createBook()">Save</button>
+        </div>
+    </form>
+</div>
+<div>
+    <button type="button" onclick="getAllBooks()">Load Books</button>
+
+    <h3>Books</h3>
+    <div id="books-ajax"></div>
+</div>
+</body>
+</html>
