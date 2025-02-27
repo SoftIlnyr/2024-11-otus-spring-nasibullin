@@ -16,5 +16,5 @@ public interface CommentService {
 
     Mono<CommentDto> updateComment(CommentUpdateDto commentUpdateDto);
 
-    void deleteCommentById(String bookCommentId);
+    Mono<Void> deleteCommentById(String bookCommentId);
 }

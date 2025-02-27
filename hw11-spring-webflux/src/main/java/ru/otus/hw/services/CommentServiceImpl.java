@@ -72,7 +72,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteCommentById(String bookCommentId) {
-        commentRepository.deleteById(bookCommentId);
+    public Mono<Void> deleteCommentById(String bookCommentId) {
+        return commentRepository.deleteById(bookCommentId);
     }
 }

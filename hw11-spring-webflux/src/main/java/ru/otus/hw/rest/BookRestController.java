@@ -44,10 +44,10 @@ public class BookRestController {
     }
 
     @DeleteMapping("/api/books/{bookId}")
-    public Mono<String> deleteBook(@PathVariable("bookId") String bookId) {
+    public Mono<Void> deleteBook(@PathVariable("bookId") String bookId) {
         bookService.deleteById(bookId);
 
-        return Mono.just("Book with id " + bookId + " deleted.");
+        return Mono.empty();
     }
 
     @PostMapping("/api/books/{bookId}/comments")

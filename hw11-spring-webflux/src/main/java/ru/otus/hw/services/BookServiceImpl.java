@@ -103,8 +103,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void deleteById(String id) {
-        bookRepository.deleteById(id).subscribe();
+    public Mono<Void> deleteById(String id) {
+        return bookRepository.deleteById(id);
     }
 
 }

@@ -141,14 +141,12 @@ public class BookRestControllerTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void deleteBook() {
-        String message = webClient.delete()
+        webClient.delete()
                 .uri("/api/books/" + bookDto1.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-
-        assertEquals("Book with id %s deleted.".formatted(bookDto1.getId()), message);
     }
 
     @Test
