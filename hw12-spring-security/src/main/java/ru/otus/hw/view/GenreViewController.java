@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class GenreViewController {
 
     @GetMapping(path = "/genres")
-    public String findAllAuthors() {
+    public String findAllGenres() {
         return "genres";
     }
 }

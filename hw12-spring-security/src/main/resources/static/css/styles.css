@@ -63,3 +63,12 @@ body {
     padding-left: 10px;
     padding-right: 10px;
 }
+
+.user_login_form {
+    border: 1px solid #53aa53;
+    width: 300px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
