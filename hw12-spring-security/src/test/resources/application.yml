@@ -20,7 +20,7 @@ mongock:
   #runner-type: "ApplicationRunner" # default
   runner-type: "InitializingBean"
   change-logs-scan-package:
-    - ru.otus.hw.mongock.changelog
+    - ru.otus.hw.mongock.testchangelog
   mongo-db:
     write-concern:
       journal: false

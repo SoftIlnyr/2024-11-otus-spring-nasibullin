@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static ru.otus.hw.mongock.testchangelog.TestValues.BOOK_1;
+import static ru.otus.hw.mongock.testchangelog.TestValues.COMMENT_1_1;
 
 @Transactional(propagation = Propagation.NEVER)
 @DisplayName("Сервис для работы с комментариями")
@@ -38,9 +40,9 @@ class CommentServiceImplTest {
     @MockitoBean
     private CommentRepository commentRepository;
 
-    private final String bookId = "bookId";
-    private final String commentId = "commentId";
-    private final String commentText = "text";
+    private final String bookId = BOOK_1.getId();
+    private final String commentId = COMMENT_1_1.getId();
+    private final String commentText = COMMENT_1_1.getText();
 
     @Test
     @DisplayName("Добавление: успешное добавление")

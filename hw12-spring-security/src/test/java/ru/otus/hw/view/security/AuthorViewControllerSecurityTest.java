@@ -7,10 +7,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.config.SecurityConfig;
-import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.view.AuthorViewController;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

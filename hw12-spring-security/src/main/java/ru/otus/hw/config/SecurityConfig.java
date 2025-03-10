@@ -20,8 +20,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/login").anonymous()
                         .requestMatchers("/css/**", "/js/**").permitAll()
-                        .requestMatchers("/authors/**", "/api/authors").authenticated()
-                        .requestMatchers("/genres/**", "/api/genres").authenticated()
+                        .requestMatchers("/authors/**", "/api/authors/**").authenticated()
+                        .requestMatchers("/genres/**", "/api/genres/**").authenticated()
                         .requestMatchers("/books/**", "/api/books/**").authenticated()
                 )
                 .formLogin(formLogin -> formLogin

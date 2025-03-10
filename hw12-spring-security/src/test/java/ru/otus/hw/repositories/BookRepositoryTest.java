@@ -49,7 +49,6 @@ class BookRepositoryTest {
         List<Comment> comments = mongoOperations.find(Query.query(Criteria.where("bookId").is(book.getId())), Comment.class);
 
         assertEquals(0, comments.size());
-
     }
 
 }

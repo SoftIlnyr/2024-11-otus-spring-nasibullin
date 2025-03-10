@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static ru.otus.hw.mongock.testchangelog.TestValues.*;
 
 @Transactional(propagation = Propagation.NEVER)
 @DisplayName("Сервис для работы с книгами")
@@ -54,11 +55,11 @@ class BookServiceImplTest {
     @MockitoBean
     private GenreRepository genreRepository;
 
-    private final String bookId = "bookId1";
-    private final String title = "title";
+    private final String bookId = BOOK_1.getId();
+    private final String title = BOOK_1.getTitle();
 
-    private final Author author1 = new Author("1a", "Author_1");
-    private final Genre genre1 = new Genre("1g", "Genre_1");
+    private final Author author1 = new Author(AUTHOR_1.getId(), AUTHOR_1.getFullName());
+    private final Genre genre1 = new Genre(GENRE_1.getId(), GENRE_1.getName());
 
     @Test
     @DisplayName("Добавление: Должно пройти успешно")
