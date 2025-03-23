@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,7 @@ import static ru.otus.hw.mongock.testchangelog.TestValues.*;
 @Transactional(propagation = Propagation.NEVER)
 @DisplayName("Сервис для работы с книгами")
 @SpringBootTest
+@WithMockUser(roles = "ADMIN") //заглушка
 class BookServiceImplTest {
 
     @Autowired

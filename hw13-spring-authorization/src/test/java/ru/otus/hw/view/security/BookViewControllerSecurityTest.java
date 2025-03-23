@@ -18,6 +18,7 @@ import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.dto.CommentCreateDto;
 import ru.otus.hw.dto.GenreDto;
+import ru.otus.hw.security.RoleCheckService;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.CommentService;
@@ -52,6 +53,9 @@ class BookViewControllerSecurityTest {
 
     @MockitoBean
     private CommentService commentService;
+
+    @MockitoBean
+    private RoleCheckService roleCheckService;
 
     private AuthorDto author1 = new AuthorDto("1a", "Author_1");
 
