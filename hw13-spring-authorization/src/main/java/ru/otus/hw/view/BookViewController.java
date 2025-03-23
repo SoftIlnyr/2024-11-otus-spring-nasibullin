@@ -8,6 +8,8 @@ import org.springframework.web.servlet.ModelAndView;
 import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.CommentCreateDto;
 import ru.otus.hw.dto.BookUpdateDto;
+import ru.otus.hw.security.RoleCheckService;
+import ru.otus.hw.security.UserRole;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.CommentService;
@@ -25,6 +27,8 @@ public class BookViewController {
 
     private final CommentService commentService;
 
+    private final RoleCheckService roleCheckService;
+
     @GetMapping(path = {"/books", "/books/"})
     public ModelAndView getBooks() {
         ModelAndView modelAndView = new ModelAndView("books");
@@ -32,6 +36,8 @@ public class BookViewController {
         modelAndView.addObject("authors", authorService.findAll());
         modelAndView.addObject("genres", genreService.findAll());
         modelAndView.addObject("book_form", new BookCreateDto());
+
+        modelAndView.addObject("has_book_create_access", roleCheckService.hasAccess(UserRole.AUTHOR));
 
         return modelAndView;
     }

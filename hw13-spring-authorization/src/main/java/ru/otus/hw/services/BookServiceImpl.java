@@ -1,6 +1,7 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
@@ -29,17 +30,20 @@ public class BookServiceImpl implements BookService {
 
     private final BookMapper bookMapper;
 
+    @PreAuthorize("hasRole(T(ru.otus.hw.security.UserRole).READER)")
     @Override
     public BookDto findById(String id) {
         Book book = getBook(id);
         return bookMapper.toDto(book);
     }
 
+    @PreAuthorize("hasRole(T(ru.otus.hw.security.UserRole).READER)")
     @Override
     public List<BookDto> findAll() {
         return bookMapper.toDto(bookRepository.findAll());
     }
 
+    @PreAuthorize("hasRole(T(ru.otus.hw.security.UserRole).AUTHOR)")
     @Override
     public BookDto insert(BookCreateDto bookCreateDto) {
         String title = bookCreateDto.getTitle();
@@ -53,6 +57,7 @@ public class BookServiceImpl implements BookService {
         return bookMapper.toDto(savedBook);
     }
 
+    @PreAuthorize("hasRole(T(ru.otus.hw.security.UserRole).AUTHOR)")
     @Override
     public BookDto update(BookUpdateDto bookUpdateDto) {
         Book book = getBook(bookUpdateDto.getId());
@@ -89,6 +94,8 @@ public class BookServiceImpl implements BookService {
         return genres;
     }
 
+
+    @PreAuthorize("hasRole(T(ru.otus.hw.security.UserRole).AUTHOR)")
     @Override
     public void deleteById(String id) {
         bookRepository.deleteById(id);

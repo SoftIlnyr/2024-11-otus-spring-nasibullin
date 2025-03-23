@@ -27,6 +27,7 @@
         <flapdoodle.version>4.6.1</flapdoodle.version>
         <version.mapstruct>1.5.5.Final</version.mapstruct>
         <version.lombok-mapstruct-binding>0.2.0</version.lombok-mapstruct-binding>
+        <version.thymeleaf-extras>3.1.2.RELEASE</version.thymeleaf-extras>
     </properties>
 
     <dependencies>
@@ -68,18 +69,24 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+            <version>${version.thymeleaf-extras}</version>
+        </dependency>
+
         <!-- MapStruct -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>${version.mapstruct}</version> <!-- Убедитесь, что используете последнюю версию -->
+            <version>${version.mapstruct}</version>
         </dependency>
 
         <!-- MapStruct Processor -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
-            <version>${version.mapstruct}</version> <!-- Убедитесь, что используете последнюю версию -->
+            <version>${version.mapstruct}</version>
             <scope>provided</scope>
         </dependency>
 

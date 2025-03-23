@@ -1,6 +1,7 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.dto.CommentCreateDto;
 import ru.otus.hw.dto.CommentDto;
@@ -24,6 +25,7 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentMapper commentMapper;
 
+    @PreAuthorize("hasRole(T(ru.otus.hw.security.UserRole).READER)")
     @Override
     public List<CommentDto> findAllComments() {
         return commentMapper.toDto(commentRepository.findAll());
@@ -34,6 +36,7 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toDto(commentRepository.findByBookId(bookId));
     }
 
+    @PreAuthorize("hasRole(T(ru.otus.hw.security.UserRole).READER)")
     @Override
     public CommentDto addComment(CommentCreateDto commentCreateDto) {
         if (commentCreateDto == null) {
@@ -50,6 +53,7 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toDto(savedComment);
     }
 
+    @PreAuthorize("hasRole(T(ru.otus.hw.security.UserRole).READER)")
     @Override
     public CommentDto updateComment(CommentUpdateDto commentUpdateDto) {
         if (commentUpdateDto == null) {
@@ -66,6 +70,7 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toDto(savedComment);
     }
 
+    @PreAuthorize("hasRole(T(ru.otus.hw.security.UserRole).READER)")
     @Override
     public void deleteCommentById(String bookCommentId) {
         commentRepository.deleteById(bookCommentId);

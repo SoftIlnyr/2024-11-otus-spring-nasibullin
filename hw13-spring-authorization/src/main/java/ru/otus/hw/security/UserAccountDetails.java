@@ -18,9 +18,11 @@ public class UserAccountDetails implements UserDetails {
 
     private final String password;
 
+    private final List<UserRole> authorities;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return authorities;
     }
 
     @Override

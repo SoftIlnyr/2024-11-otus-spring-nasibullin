@@ -7,7 +7,7 @@
     <script th:src="@{/js/books.js}"></script>
 </head>
 <body onload="getAllBooks()">
-<div class="book_create_form">
+<div class="book_create_form" th:if="${has_book_create_access}">
     <h3>Add book</h3>
 
     <form action="">
