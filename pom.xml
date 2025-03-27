@@ -24,5 +24,6 @@
         <module>hw11-spring-webflux</module>
         <module>hw12-spring-security</module>
         <module>hw13-spring-authorization</module>
+        <module>hw14-spring-batch</module>
     </modules>
 </project>
