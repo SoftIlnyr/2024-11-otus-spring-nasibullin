@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MongoToPostgresMigrationConfig {
 
-    private static final String MIGRATE_MONGO_TO_POSTGRES_JOB_NAME = "migrateMongoToPostgresJob";
+    public static final String MIGRATE_MONGO_TO_POSTGRES_JOB_NAME = "migrateMongoToPostgresJob";
 
     @Autowired
     private JobRepository jobRepository;
