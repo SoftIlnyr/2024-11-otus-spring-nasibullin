@@ -15,6 +15,7 @@ public class SpringActuatorApplication {
 		System.out.println("Genres http://localhost:8080/genres");
 		System.out.println("Books http://localhost:8080/books");
 		System.out.println("Books http://localhost:8080/actuator");
+		System.out.println("Books http://localhost:8080/explorer");
 	}
 
 }

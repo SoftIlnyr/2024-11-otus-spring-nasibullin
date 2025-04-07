@@ -1,5 +1,7 @@
 spring:
   data:
+    rest:
+      base-path: /datarest
     mongodb:
       host: localhost
       port: 27018 # when flapdoodle using

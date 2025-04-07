@@ -41,7 +41,8 @@ public class SecurityConfig {
                         .requestMatchers("/authors/**", "/api/authors/**").authenticated()
                         .requestMatchers("/genres/**", "/api/genres/**").authenticated()
                         .requestMatchers("/books/**", "/api/books/**").authenticated()
-                        .requestMatchers("/actuator/**").hasRole("ADMIN")
+                        .requestMatchers("/actuator/**", "/explorer/**").hasRole("ADMIN")
+                        .requestMatchers("/datarest/**").hasAnyRole("ADMIN", "AUTHOR")
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
