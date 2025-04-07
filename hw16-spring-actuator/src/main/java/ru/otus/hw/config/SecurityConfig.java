@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/authors/**", "/api/authors/**").authenticated()
                         .requestMatchers("/genres/**", "/api/genres/**").authenticated()
                         .requestMatchers("/books/**", "/api/books/**").authenticated()
+                        .requestMatchers("/actuator/**").hasRole("ADMIN")
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
