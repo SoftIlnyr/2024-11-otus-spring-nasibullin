@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Server Error!</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div>
+    <div class="book">
+        <h3 th:text="${error_message}"></h3>
+        <a th:href="@{/books}">back to Books</a>
+    </div>
+</div>
+</body>
+</html>
