@@ -30,12 +30,10 @@ public class IntegrationConfig {
 	}
 
 	@Bean
-	public IntegrationFlow cafeFlow(CleaningService cleaningService, TransfigurationService transfigurationService) {
+	public IntegrationFlow alchemyFlow(CleaningService cleaningService, TransfigurationService transfigurationService) {
 		return IntegrationFlow.from(materialChannel())
-				.split()
 				.handle(cleaningService, "clean")
 				.handle(transfigurationService, "transfigure")
-				.aggregate()
 				.channel(goldChannel())
 				.get();
 	}
