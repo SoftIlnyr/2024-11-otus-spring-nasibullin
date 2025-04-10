@@ -33,6 +33,11 @@ logging:
       springframework:
         security: DEBUG
         wed: DEBUG
+  file:
+    path: ./logs
+    name: ${logging.file.path}/application.log  # полный путь к файлу
+  pattern:
+      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 de:
   flapdoodle:
