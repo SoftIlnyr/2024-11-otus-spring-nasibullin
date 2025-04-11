@@ -3,8 +3,8 @@ spring:
     rest:
       base-path: /datarest
     mongodb:
-      host: localhost
-      port: 27018 # when flapdoodle using
+      host: mongodb
+      port: 27017
       database: book_store
 
   mvc:
@@ -38,12 +38,6 @@ logging:
     name: ${logging.file.path}/application.log  # полный путь к файлу
   pattern:
       file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-
-de:
-  flapdoodle:
-    mongodb:
-      embedded:
-        version: 4.0.2
 
 mongock:
   #runner-type: "ApplicationRunner" # default

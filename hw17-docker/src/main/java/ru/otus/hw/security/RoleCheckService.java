@@ -34,7 +34,7 @@ public class RoleCheckService {
             allRoles.add(role);
             listedRoles.add(role);
             if (roleHierarchy.containsKey(role)) {
-                List<UserRole> roles = roleHierarchy.get(role);
+                List<UserRole> roles = new ArrayList<>(roleHierarchy.get(role));
                 roles.removeAll(listedRoles);
                 rolesToCheck.addAll(roles);
             }
