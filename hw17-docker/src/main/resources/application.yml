@@ -1,0 +1,51 @@
+spring:
+  data:
+    rest:
+      base-path: /datarest
+    mongodb:
+      host: mongodb
+      port: 27017
+      database: book_store
+
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+#  autoconfigure:
+#    exclude: de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        wed: DEBUG
+  file:
+    path: ./logs
+    name: ${logging.file.path}/application.log  # полный путь к файлу
+  pattern:
+      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+mongock:
+  #runner-type: "ApplicationRunner" # default
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.hw.mongock.changelog
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
+
