@@ -1,5 +1,7 @@
 package ru.otus.hw.view;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,8 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AuthorViewController {
 
     @GetMapping(path = "/authors")
+    @RateLimiter(name = "defaultRateLimiter")
+    @CircuitBreaker(name = "defaultCircuitBreaker")
     public String findAllAuthors() {
-
         return "authors";
     }
 }

@@ -1,5 +1,7 @@
 package ru.otus.hw.view;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +32,8 @@ public class BookViewController {
     private final RoleCheckService roleCheckService;
 
     @GetMapping(path = {"/books", "/books/"})
+    @RateLimiter(name = "bookRateLimiter")
+    @CircuitBreaker(name = "bookCircuitBreaker")
     public ModelAndView getBooks() {
         ModelAndView modelAndView = new ModelAndView("books");
 
@@ -43,6 +47,8 @@ public class BookViewController {
     }
 
     @GetMapping("/books/{bookId}")
+    @RateLimiter(name = "bookRateLimiter")
+    @CircuitBreaker(name = "bookCircuitBreaker")
     public ModelAndView getBookInfo(@PathVariable(name = "bookId") String bookId) {
         ModelAndView modelAndView = new ModelAndView("books_detail");
 
@@ -58,6 +64,8 @@ public class BookViewController {
     }
 
     @GetMapping("books/{bookId}/actions")
+    @RateLimiter(name = "bookRateLimiter")
+    @CircuitBreaker(name = "bookCircuitBreaker")
     public ModelAndView getBookActions(@PathVariable("bookId") String bookId) {
         ModelAndView modelAndView = new ModelAndView("books_actions");
 
