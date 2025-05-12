@@ -8,6 +8,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.BookUpdateDto;
@@ -210,6 +211,13 @@ class BookServiceImplTest {
 
         assertThrows(EntityNotFoundException.class,
                 () -> bookService.update(bookUpdateDto));
+    }
+
+    @Test
+    void findAll_withFallback() {
+        when(bookRepository.findAll()).thenThrow(new RuntimeException());
+        List<BookDto> result = bookService.findAll();
+        assertEquals(0, result.size());
     }
 
 }

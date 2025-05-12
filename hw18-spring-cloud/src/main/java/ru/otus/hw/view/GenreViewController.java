@@ -12,7 +12,6 @@ public class GenreViewController {
 
     @GetMapping(path = "/genres")
     @RateLimiter(name = "defaultRateLimiter")
-    @CircuitBreaker(name = "defaultCircuitBreaker")
     public String findAllGenres() {
         return "genres";
     }

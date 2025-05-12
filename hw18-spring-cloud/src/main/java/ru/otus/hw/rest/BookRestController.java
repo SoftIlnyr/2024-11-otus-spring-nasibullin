@@ -31,15 +31,11 @@ public class BookRestController {
     private final CommentService commentService;
 
     @GetMapping(path = {"/api/books", "/api/books/"})
-    @RateLimiter(name = "bookRateLimiter")
-    @CircuitBreaker(name = "bookCircuitBreaker")
     public ResponseEntity<List<BookDto>> findAllBooks() {
         return ResponseEntity.ok(bookService.findAll());
     }
 
     @PostMapping(path = {"/api/books", "/api/books/"})
-    @RateLimiter(name = "bookRateLimiter")
-    @CircuitBreaker(name = "bookCircuitBreaker")
     public ResponseEntity<BookDto> addNewBook(@Valid @RequestBody BookCreateDto bookCreateDto) {
         var savedBook = bookService.insert(bookCreateDto);
 
@@ -47,8 +43,6 @@ public class BookRestController {
     }
 
     @PutMapping("/api/books/{bookId}")
-    @RateLimiter(name = "bookRateLimiter")
-    @CircuitBreaker(name = "bookCircuitBreaker")
     public ResponseEntity<BookDto> updateBook(@PathVariable("bookId") String bookId,
                              @Valid @RequestBody BookUpdateDto bookUpdateDto) {
         var savedBook = bookService.update(bookUpdateDto);
@@ -57,8 +51,6 @@ public class BookRestController {
     }
 
     @DeleteMapping("/api/books/{bookId}")
-    @RateLimiter(name = "bookRateLimiter")
-    @CircuitBreaker(name = "bookCircuitBreaker")
     public ResponseEntity<String> deleteBook(@PathVariable("bookId") String bookId) {
         bookService.deleteById(bookId);
 
@@ -66,8 +58,6 @@ public class BookRestController {
     }
 
     @PostMapping("/api/books/{bookId}/comments")
-    @RateLimiter(name = "bookRateLimiter")
-    @CircuitBreaker(name = "bookCircuitBreaker")
     public ResponseEntity<CommentDto> addComment(@PathVariable("bookId") String bookId,
                                  @RequestBody CommentCreateDto commentCreateDto) {
         var savedComment = commentService.addComment(commentCreateDto);

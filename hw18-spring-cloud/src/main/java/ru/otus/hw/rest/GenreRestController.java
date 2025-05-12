@@ -18,8 +18,6 @@ public class GenreRestController {
     private final GenreService genreService;
 
     @GetMapping(path = "/api/genres")
-    @RateLimiter(name = "defaultRateLimiter")
-    @CircuitBreaker(name = "defaultCircuitBreaker")
     public ResponseEntity<List<GenreDto>> findAllAuthors() {
         List<GenreDto> genres = genreService.findAll();
 

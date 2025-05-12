@@ -12,7 +12,6 @@ public class AuthorViewController {
 
     @GetMapping(path = "/authors")
     @RateLimiter(name = "defaultRateLimiter")
-    @CircuitBreaker(name = "defaultCircuitBreaker")
     public String findAllAuthors() {
         return "authors";
     }

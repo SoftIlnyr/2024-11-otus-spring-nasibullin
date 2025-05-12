@@ -37,6 +37,11 @@ class BookRepositoryTest {
     private MongoOperations mongoOperations;
 
     @Test
+    void findAllBooks() {
+        assertEquals(3, bookRepository.findAll().size());
+    }
+
+    @Test
     void deleteBook_deletesComments() {
         var author = authorRepository.save(new Author("TestAuthor"));
         var genre = genreRepository.save(new Genre("TestGenre"));

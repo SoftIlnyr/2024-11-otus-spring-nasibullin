@@ -33,7 +33,6 @@ public class BookViewController {
 
     @GetMapping(path = {"/books", "/books/"})
     @RateLimiter(name = "bookRateLimiter")
-    @CircuitBreaker(name = "bookCircuitBreaker")
     public ModelAndView getBooks() {
         ModelAndView modelAndView = new ModelAndView("books");
 
@@ -48,7 +47,7 @@ public class BookViewController {
 
     @GetMapping("/books/{bookId}")
     @RateLimiter(name = "bookRateLimiter")
-    @CircuitBreaker(name = "bookCircuitBreaker")
+    @CircuitBreaker(name = "defaultCircuitBreaker")
     public ModelAndView getBookInfo(@PathVariable(name = "bookId") String bookId) {
         ModelAndView modelAndView = new ModelAndView("books_detail");
 
@@ -65,7 +64,7 @@ public class BookViewController {
 
     @GetMapping("books/{bookId}/actions")
     @RateLimiter(name = "bookRateLimiter")
-    @CircuitBreaker(name = "bookCircuitBreaker")
+    @CircuitBreaker(name = "defaultCircuitBreaker")
     public ModelAndView getBookActions(@PathVariable("bookId") String bookId) {
         ModelAndView modelAndView = new ModelAndView("books_actions");
 
