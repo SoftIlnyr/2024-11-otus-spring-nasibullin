@@ -1,0 +1,27 @@
+spring:
+  data:
+    mongodb:
+      port: 0 # when flapdoodle using
+      database: book_store
+
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
+
+mongock:
+  #runner-type: "ApplicationRunner" # default
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.hw.mongock.testchangelog
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local

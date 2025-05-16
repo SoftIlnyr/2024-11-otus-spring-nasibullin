@@ -1,0 +1,79 @@
+spring:
+  data:
+    rest:
+      base-path: /datarest
+    mongodb:
+      host: localhost
+      port: 27018 # when flapdoodle using
+      database: book_store
+
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+#  autoconfigure:
+#    exclude: de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+
+logging:
+  level:
+    io.github.resilience4j: DEBUG
+    org:
+      springframework:
+        security: DEBUG
+        wed: DEBUG
+  file:
+    path: ./logs
+    name: ${logging.file.path}/application.log  # полный путь к файлу
+  pattern:
+      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
+
+mongock:
+  #runner-type: "ApplicationRunner" # default
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.hw.mongock.changelog
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
+
+resilience4j:
+  ratelimiter:
+    instances:
+      bookRateLimiter:
+        timeout-duration: 1s
+        limitForPeriod: 1
+        limitRefreshPeriod: 2s
+      defaultRateLimiter:
+        timeout-duration: 1s
+        limit-for-period: 10
+        limit-refresh-period: 1s
+  circuitbreaker:
+    instances:
+      defaultCircuitBreater:
+        sliding-window-type: time_based
+        sliding-window-size: 1
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 5s
+
+

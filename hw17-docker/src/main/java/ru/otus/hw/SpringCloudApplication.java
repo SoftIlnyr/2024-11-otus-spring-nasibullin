@@ -6,10 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @EnableMongock
 @SpringBootApplication
-public class SpringActuatorApplication {
+public class SpringCloudApplication {
 
 	public static void main(String[] args) {
-        SpringApplication.run(SpringActuatorApplication.class, args);
+        SpringApplication.run(SpringCloudApplication.class, args);
         System.out.println("Login http://localhost:8080/login");
         System.out.println("Authors http://localhost:8080/authors");
 		System.out.println("Genres http://localhost:8080/genres");
